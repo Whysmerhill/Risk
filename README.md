@@ -13,4 +13,6 @@ TODO:
 <li>make continent appear when you higlight continent or objectives</li>
 <li>finish game when a player achieve is goal</li>
 <li>help menu</li>
+~~<li>give goals to player</li>~~
+<li>correct continents goals</li>
 </ul>

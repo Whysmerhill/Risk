@@ -72,7 +72,7 @@ class Player():
 		else:
 			return False
 
-#class des types définition des missions à effectuer par les joueurs
+#types de définition des missions à effectuer par les joueurs
 class Goal():
 	def __init__(self,Map,turns):
 		self.turns=turns
@@ -84,7 +84,7 @@ class Goal():
 class Objective():
 	def __init__(self,goal,player):
 		self.goal=goal
-		self.type=self.goal.types[random.randint(0,0)]#len(self.types)-1)]
+		self.type=self.goal.types[random.randint(0,len(self.goal.types)-1)]
 		self.player=player
 		self._description=''
 		self.gen_obj()
@@ -215,7 +215,6 @@ class Turns():
 		self.goal=Goal(M,self)
 		for k in range(0,nb_players):
 			self.players[k].obj=Objective(self.goal,self.players[k])
-		print(self.players[0].obj.description)
 		self.id_ordre=0
 		self.map=M
 		self.list_phase=['placement','attaque','deplacement']
