@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 import random
+import copy
 
 class Continent():
 	def __init__(self,pays,bonus,name,Map):
@@ -31,15 +32,18 @@ class Pays():
 		print(self.id,self.name,self.continent,self.id_player,self.nb_troupes,self.voisins)
 
 class Player():
-	def __init__(self,id,Map):
+	def __init__(self,id,Map,turns):
 		self.id=id
 		self.nb_troupes=0
 		self.name=""
 		self.pays=[]
 		self._bonus=0
 		self._sbyturn=0
+		self._isalive=True
 		self.color=(0,0,0)
 		self.map=Map
+		self.turns=turns
+		self.obj=None
 
 	def print_carac(self):
 		print(self.id,self.name,self.nb_troupes,self.sbyturn,self.pays)
@@ -61,27 +65,134 @@ class Player():
 				b+=c.bonus
 		return b
 
-class Objectifs():
-	def __init__(self):
-		self.types=['capture continents','capture pays','destroy']
-
-	def capture_pays(nb_pays,nb_troupes):
-		pass
-		nb_occupe=0
-		for p in pays_joueur:
-			if p.nb_troupes>nb_troupes-1 and p.id_player==joueur.id:
-				nb_occupe++
-		if nb_occupe>nb_pays-1:
+	@property
+	def isalive(self):
+		if len(self.pays)>0:
 			return True
-		else
+		else:
 			return False
 
-	def destroy_player(player)
-		if not player.isalive():
+#class des types définition des missions à effectuer par les joueurs
+class Goal():
+	def __init__(self,Map,turns):
+		self.turns=turns
+		self.types=['capture continents','capture pays','destroy']
+		self.map=Map
+		self.randrange=[[0,1,2,3,4,5],[],[x for x in range(1,turns.nb_players+1)]]
+
+#def des missions
+class Objective():
+	def __init__(self,goal,player):
+		self.goal=goal
+		self.type=self.goal.types[random.randint(0,0)]#len(self.types)-1)]
+		self.player=player
+		self._description=''
+		self.gen_obj()
+
+	def gen_obj(self):
+		if self.type=='capture continents':
+			self.continents=[]
+			self.nbtroupes=1
+			r_choice=random.choice(self.goal.randrange[0])
+			self.goal.randrange[0].remove(r_choice) #on enleve la combinaison choisi pour eviter les doublons de missions
+			if r_choice==0:
+				self.continents.append(self.goal.map.continents[4])
+				self.continents.append(self.goal.map.continents[5])
+				self.continents.append(self.goal.map.continents[random.randint(0,3)])
+			elif r_choice==1:
+				self.continents.append(self.goal.map.continents[4])
+				self.continents.append(self.goal.map.continents[2])
+				rand_nb=[0,1,3,5]
+				self.continents.append(self.goal.map.continents[random.choice(rand_nb)])
+			elif r_choice==2:
+				self.continents.append(self.goal.map.continents[1])
+				self.continents.append(self.goal.map.continents[0])
+			elif r_choice==3:
+				self.continents.append(self.goal.map.continents[1])
+				self.continents.append(self.goal.map.continents[5])
+			elif r_choice==4:
+				self.continents.append(self.goal.map.continents[3])
+				self.continents.append(self.goal.map.continents[2])
+			elif r_choice==5:
+				self.continents.append(self.goal.map.continents[3])
+				self.continents.append(self.goal.map.continents[0])
+		if self.type=='capture pays':
+			r_choice=random.randint(0,1)
+			if r_choice==0:
+				self.nbpays=18
+				self.nbtroupes=2
+			if r_choice==1:
+				self.nbpays=24
+				self.nbtroupes=1
+		if self.type=='destroy':
+			randrange_excl=copy.copy(self.goal.randrange[2])
+			try:
+				randrange_excl.remove(self.player.id)#exclude himself
+			except ValueError:
+				pass #player deja remove de la list
+			if len(randrange_excl)==0:
+				print('erreur de merde')
+			try:
+				randid=random.choice(randrange_excl)
+				print(self.goal.randrange[2],randrange_excl,randid)
+				self.goal.randrange[2].remove(randid)#on enleve la combinaison pour eviter les doublons de mission
+				self.target=self.goal.turns.players[randid-1] 
+			except IndexError: #le seul joueur attaquable est lui mm
+				self.type=self.goal.types[random.randint(0,1)]#on choisi une autre mission
+				self.gen_obj()
 			
+	@property
+	def description(self):
+		if self.type=='capture continents':
+			tmp_str='Capturer'
+			for i in range(0,len(self.continents)):
+				tmp_str+=' '+str(self.continents[i].name)
+			return tmp_str
+		if self.type=='capture pays':
+			return 'Capturer '+str(self.nbpays)+' pays'
+		if self.type=='destroy':
+			if self.target.name=='':
+				return 'Détruire '+str(self.target.id)
+			else:
+				return 'Détruire '+str(self.target.name)
 
+	def get_state(self):
+		if self.type=='capture pays':
+			return self.capture_pays(self.nbpays,self.nbtroupes)
+		if self.type=='capture continents':
+			return self.capture_continents(self.continents,self.nbtroupes)
+		if self.type=='destroy':
+			return self.destroy_player(self.target)		
 
+	def capture_pays(self,nb_pays,nb_troupes):
+		nb_occupe=0
+		for p in self.goal.map.pays:
+			if p.nb_troupes>nb_troupes-1 and p.id_player==self.player.id:
+				nb_occupe+=1
+		if nb_occupe>nb_pays-1:
+			return True
+		else:
+			return False
 
+	def capture_continents(self,continents,nb_troupes):
+		nb_occupe=0
+		for c in continents:
+			cont_occupe=True
+			for p in c.pays:
+				if p.nb_troupes<nb_troupes or p.id_player!=self.player.id:
+					cont_occupe=False
+			if cont_occupe==True:
+				nb_occupe+=1
+		if nb_occupe==len(continents):
+			return True
+		else:
+			return False
+
+	def destroy_player(self,player):
+		if not player.isalive:
+			return True
+		else:
+			return False
 
 class CartesBonus():
 	def __init__(self,nb_cartes):
@@ -97,8 +208,14 @@ class Turns():
 		random.shuffle(self.ordre)
 		self.nb_pays=M.nb_pays
 		self.players=[]
+		#generation des joueurs
 		for k in range(0,nb_players):
-			self.players.append(Player(k+1,M))
+			self.players.append(Player(k+1,M,self))
+		#affectation des objectifs aprés que tous les joueurs soient crées
+		self.goal=Goal(M,self)
+		for k in range(0,nb_players):
+			self.players[k].obj=Objective(self.goal,self.players[k])
+		print(self.players[0].obj.description)
 		self.id_ordre=0
 		self.map=M
 		self.list_phase=['placement','attaque','deplacement']
@@ -190,6 +307,9 @@ class Turns():
 				dice_atck=2
 			elif nb_attaquants>0:
 				dice_atck=1
+			else:
+				#throw exception pas assez de troupes pour attaquer
+				pass
 			if pays_d.nb_troupes>1:
 				dice_def=2
 			elif pays_d.nb_troupes>0:

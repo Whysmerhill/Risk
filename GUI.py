@@ -7,8 +7,8 @@ from pygame.locals import *
 import Risk
 import glob
 
-PATH_IMG='Images/'
-PATH_MAP='Images/Map/'
+PATH_IMG='Pictures/'
+PATH_MAP='Pictures/Maps/'
 MAP_IMG='Risk_game_map_fixed.bmp'
 f_w=1280
 f_h=800
@@ -86,7 +86,7 @@ def display_troupes(textes,sprites,Map):
 def display_hud(t_hud,turns,pos):
 	smallText = pygame.font.Font("freesansbold.ttf",16)
 	marge=20
-	col=600
+	col=[0,300,600,700]
 	row=pos[1]
 	#partie joueur
 	textSurf, textRect = text_objects('Tour : '+str(turns.num), smallText)
@@ -108,13 +108,34 @@ def display_hud(t_hud,turns,pos):
 	pos=(pos[0],pos[1]+marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
+
+	#partie objectifs
+	textSurf, textRect = text_objects('Objectif(s) ', smallText)
+	pos=(col[1],row)
+	textRect.topleft = pos
+	t_hud.append([textSurf, textRect])
+	try:
+		textSurf, textRect = text_objects(str(turns.players[turns.player_turn-1].obj.description), smallText)
+	except AttributeError:
+		pass
+	pos=(col[1],row+marge)
+	textRect.topleft = pos
+	t_hud.append([textSurf, textRect])
+	try:
+		textSurf, textRect = text_objects('Statut : '+str(turns.players[turns.player_turn-1].obj.get_state()), smallText)
+	except AttributeError:
+		pass
+	pos=(col[1],row+2*marge)
+	textRect.topleft = pos
+	t_hud.append([textSurf, textRect])
+
 	#partie bonus des continents
-	pos=(col,row)
+	pos=(col[3],row)
 	textSurf, textRect = text_objects('Bonus Continents', smallText)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
 	for idx,c in enumerate(turns.map.continents):
-		pos=(col,row+(idx+1)*marge)
+		pos=(col[3],row+(idx+1)*marge)
 		textSurf, textRect = text_objects(c.name+' '+str(c.bonus), smallText)
 		textRect.topleft = pos
 		t_hud.append([textSurf, textRect])
@@ -297,6 +318,7 @@ def start_game():
 	Win.surfaces.extend([[background,(0,0)],[barre,(0,h)],[map_monde,(0,0)]])
 
 def menu_but():
+	#useless
 	button('Start',150,150,100,50,grey,lgrey,start_game)
 	func=functools.partial(roll_dices,[5,4,4],0,0)		#generation d'une nouvelle fonction avec les agruments
 	button('Roll1',f_w/2,f_h/2,100,50,grey,lgrey,func)
