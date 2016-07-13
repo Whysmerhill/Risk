@@ -170,6 +170,7 @@ class Objective():
 			if p.nb_troupes>nb_troupes-1 and p.id_player==self.player.id:
 				nb_occupe+=1
 		if nb_occupe>nb_pays-1:
+			self.goal.turns.game_finish=True
 			return True
 		else:
 			return False
@@ -184,12 +185,14 @@ class Objective():
 			if cont_occupe==True:
 				nb_occupe+=1
 		if nb_occupe==len(continents):
+			self.goal.turns.game_finish=True
 			return True
 		else:
 			return False
 
 	def destroy_player(self,player):
 		if not player.isalive:
+			self.goal.turns.game_finish=True
 			return True
 		else:
 			return False
@@ -202,6 +205,7 @@ class CartesBonus():
 
 class Turns():
 	def __init__(self,nb_players,M):
+		self.game_finish=False
 		self.num=0
 		self.nb_players=nb_players
 		self.ordre=list(range(1,nb_players+1))
@@ -327,8 +331,8 @@ class Turns():
 				self.players[pays_d.id_player-1].pays.remove(pays_d.id)
 				#on change le player id 
 				pays_d.id_player=pays_a.id_player
-				#deplacement automatique du minimum
-				self.deplacer(pays_a,pays_d,1)
+				#deplacement automatique du maximum
+				self.deplacer(pays_a,pays_d,pays_a.nb_troupes-1)
 				return True   #success
 
 	def deplacer(self,pays_ori,pays_dest,nb_troupes):

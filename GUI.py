@@ -165,6 +165,7 @@ class CurrentWindow():
 		self.textes=[]#liste des textes de troupes pour les fusionner aprés les surfaces
 		self.tmp=[]#liste des spirtes temporaires
 		self.t_hud=[]#liste des textes HUD
+		self.final_layer=[]#derniere couche d'affichage, utilisé pour le winning screen et le menu d'aide
 
 	def color_players(self,sprites):
 		for pl in self.players:
@@ -175,6 +176,7 @@ class CurrentWindow():
 				#print(sprite.id,pays)
 
 	def afficher(self,fonction=None):
+		colormap=ColorMap()
 		afficher=1
 		select=False
 		sprite_select=-1
@@ -209,6 +211,8 @@ class CurrentWindow():
 						self.tmp=[]
 						select=False
 						sprite_select=0
+					if event.key == K_w:
+						self.turns.game_finish=True
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
 			for sprite in sprites_pays:
@@ -219,12 +223,24 @@ class CurrentWindow():
 				self.fenetre.blit(texte[0],texte[1])
 			for t in self.t_hud:
 				self.fenetre.blit(t[0],t[1])
+			for final in self.final_layer:
+				self.fenetre.blit(final[0],final[1])
 			if self.fonctions != []:
 				for f in self.fonctions:
 					f()				#fonctions d'affichage
+
+			#Ecran de victoire lorsqu'un joueur gagne
+			if self.turns.game_finish==True:
+				# sprites_pays=[]
+				win_screen = pygame.Surface(self.fenetre.get_size())
+				win_screen = win_screen.convert()
+				win_screen.fill(colormap.black)
+				self.final_layer.append([win_screen,(0,0)])
+
 			#pygame.display.flip()
 			mouse = pygame.mouse.get_pos()
 			#print(self.fenetre.get_at((mouse[0], mouse[1])))
+			#boucle de survole des pays
 			for idx,sprite in enumerate(sprites_pays):
 				if sprite.bounds.x<mouse[0]<sprite.bounds.x+sprite.bounds.width and sprite.bounds.y<mouse[1]<sprite.bounds.y+sprite.bounds.height: 
 					if sprite.map_pays.get_at((mouse[0],mouse[1])) != (0,0,0):
