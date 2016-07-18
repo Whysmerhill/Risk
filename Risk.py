@@ -44,6 +44,8 @@ class Player():
 		self.map=Map
 		self.turns=turns
 		self.obj=None
+		self.cards=[]
+		self.win_land=False
 
 	def print_carac(self):
 		print(self.id,self.name,self.nb_troupes,self.sbyturn,self.pays)
@@ -197,11 +199,13 @@ class Objective():
 		else:
 			return False
 
-class CartesBonus():
-	def __init__(self,nb_cartes):
-		self.nb_cartes=nb_cartes
-		self.types=['Soldat','Cavalier','Canon']
-		self.bonus=[5,8,10,12]
+class Card():
+	def __init__(self):
+		types=['Soldat','Cavalier','Canon']
+		bonus=[5,8,10,12]
+		self.type=types[random.randint(0,2)]
+	def __repr__(self):
+		return str(self.type)
 
 class Turns():
 	def __init__(self,nb_players,M):
@@ -236,6 +240,8 @@ class Turns():
 			if self.phase == 0 :
 				self.phase+=1
 				self.id_ordre=(self.id_ordre+1)%len(self.ordre)
+				#mise a jour du booleen de pays capture
+				self.players[self.player_turn-1].win_land=False
 				if self.id_ordre==0:
 					self.num+=1
 					self.phase=0
@@ -245,6 +251,8 @@ class Turns():
 			self.phase=(self.phase+1)%len(self.list_phase)
 			if self.phase == 0 :
 				self.id_ordre=(self.id_ordre+1)%len(self.ordre)
+				#mise a jour du booleen de pays capture
+				self.players[self.player_turn-1].win_land=False
 				#mise a jour du nombre de troupes dispos : renforts de débuts de tour
 				self.players[self.player_turn-1].nb_troupes+=self.players[self.player_turn-1].sbyturn
 				if self.id_ordre==0:
@@ -333,6 +341,11 @@ class Turns():
 				pays_d.id_player=pays_a.id_player
 				#deplacement automatique du maximum
 				self.deplacer(pays_a,pays_d,pays_a.nb_troupes-1)
+				#on donne une carte au joueur attaquant si c'est son premier territoire capturé ce tour
+				if self.players[pays_a.id_player-1].win_land==False:
+					self.players[pays_a.id_player-1].win_land=True
+					self.players[pays_a.id_player-1].cards.append(Card())
+					print(self.players[pays_a.id_player-1].cards)
 				return True   #success
 
 	def deplacer(self,pays_ori,pays_dest,nb_troupes):
