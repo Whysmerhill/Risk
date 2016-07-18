@@ -47,6 +47,14 @@ class Player():
 		self.cards=[]
 		self.win_land=False
 
+	def use_cards(self,cards):
+		#triplé
+		if cards[0]==cards[1] and cards[1]==cards[2] and cards[0]==cards[2]:
+				self.nb_troupes+=cards[0].bonus
+		#deparaillé
+		if cards[0]!=cards[1] and cards[1]!=cards[2] and cards[0]!=cards[2]:
+			self.nb_troupes+=cards[0].max_bonus
+
 	def print_carac(self):
 		print(self.id,self.name,self.nb_troupes,self.sbyturn,self.pays)
 
@@ -203,7 +211,10 @@ class Card():
 	def __init__(self):
 		types=['Soldat','Cavalier','Canon']
 		bonus=[5,8,10,12]
-		self.type=types[random.randint(0,2)]
+		rand=random.randint(0,2)
+		self.type=types[rand]
+		self.bonus=bonus[rand]
+		self.max_bonus=bonus[-1]
 	def __repr__(self):
 		return str(self.type)
 
@@ -260,6 +271,10 @@ class Turns():
 		print('tour numero :', self.num,'ordre',self.ordre,'joueur tour', self.ordre[self.id_ordre])
 		print(self.list_phase[self.phase])
 
+	def next_player(self):
+		#TODO
+		pass
+
 	def start_deploy(self):
 		if self.nb_players==3:
 			nb_troupes=35
@@ -270,6 +285,7 @@ class Turns():
 		elif self.nb_players==6:
 			nb_troupes=20
 		else:
+			#throw execption
 			print('Nombre de players invalide')
 		for p in self.players:
 			p.nb_troupes=nb_troupes
@@ -320,7 +336,7 @@ class Turns():
 				dice_atck=1
 			else:
 				#throw exception pas assez de troupes pour attaquer
-				pass
+				raise ValueError('not enough troops :',nb_attaquants)
 			if pays_d.nb_troupes>1:
 				dice_def=2
 			elif pays_d.nb_troupes>0:
@@ -344,7 +360,11 @@ class Turns():
 				#on donne une carte au joueur attaquant si c'est son premier territoire capturé ce tour
 				if self.players[pays_a.id_player-1].win_land==False:
 					self.players[pays_a.id_player-1].win_land=True
-					self.players[pays_a.id_player-1].cards.append(Card())
+					#si le joueur a plus de 5 cartes il doit se défausse
+					if len(self.players[pays_a.id_player-1].cards)>4:
+						raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
+					else:
+						self.players[pays_a.id_player-1].cards.append(Card())
 					print(self.players[pays_a.id_player-1].cards)
 				return True   #success
 

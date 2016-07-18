@@ -11,7 +11,9 @@ Shortcut:
 
 Known bug:
 <ul>
-<li>attack with 1 man land</li>
+<li><del>attack with 1 man land</del></li>
+<li>no path mexic->argentine</li>
+<li>encoding goals bug</li>
 </ul>
 
 TODO:
@@ -24,8 +26,10 @@ TODO:
 <li>make bonus card usable</li>
 <li>limit number of bonus card to five</li>
 <li>make continent appear when you higlight continent or objectives</li>
-<li>finish game when a player achieve is goal</li>
+<li><del>finish game when a player achieve is goal</del></li>
+<li>make a victory screen</li>
 <li>help menu</li>
 <del><li>give goals to player</li></del>
 <li>correct continents goals</li>
+<li>fonction next player</li>
 </ul>

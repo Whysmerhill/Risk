@@ -212,6 +212,8 @@ class CurrentWindow():
 						select=False
 						sprite_select=0
 					if event.key == K_w:
+						self.turns.game_finish=False
+					if event.key == K_h:
 						self.turns.game_finish=True
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
@@ -273,7 +275,11 @@ class CurrentWindow():
 							elif click[0]==1:
 								pays2=next((p for p in self.map.pays if p.id == sprite.id), None)
 								if pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
-									atck=self.turns.attaque(pays1,pays2,pays1.nb_troupes-1)
+									try:
+										atck=self.turns.attaque(pays1,pays2,pays1.nb_troupes-1)
+									except ValueError as e:
+										print(e.args)
+										atck=False
 									select=False
 									self.tmp=[]
 									if atck:
