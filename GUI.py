@@ -265,7 +265,7 @@ class CurrentWindow():
 				win_screen = pygame.Surface(self.fenetre.get_size())
 				win_screen = win_screen.convert()
 				win_screen.fill(colormap.black)
-				win_screen.set_alpha(127)
+				win_screen.set_alpha(180)
 				self.final_layer.append([win_screen,(0,0)])
 				display_win(self.final_layer,self.players)
 
