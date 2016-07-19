@@ -83,6 +83,9 @@ class Player():
 		if len(self.pays)>0:
 			return True
 		else:
+			#TODO
+			#print(self.name+" is dead")
+			#self.turns.ordre.remove(self.id_player)
 			return False
 
 #types de définition des missions à effectuer par les joueurs
@@ -165,9 +168,9 @@ class Objective():
 			return 'Capturer '+str(self.nbpays)+' pays'
 		if self.type=='destroy':
 			if self.target.name=='':
-				return 'Détruire '+str(self.target.id)
+				return 'Detruire '+str(self.target.id)
 			else:
-				return 'Détruire '+str(self.target.name)
+				return 'Detruire '+str(self.target.name)
 
 	def get_state(self):
 		if self.type=='capture pays':

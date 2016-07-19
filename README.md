@@ -8,6 +8,7 @@ Shortcut:
 <li>ESC : quit</li>
 <li>n : next phase</li>
 <li>p : next player turn</li>
+<li>h : show/hide help menu</li>
 </ul>
 
 Known bug:
@@ -29,8 +30,12 @@ TODO:
 <li>make continent appear when you higlight continent or objectives</li>
 <li><del>finish game when a player achieve is goal</del></li>
 <li><del>make a victory screen</del></li>
-<li>help menu</li>
+<li><del>help menu</del></li>
 <del><li>give goals to player</li></del>
 <li>correct continents goals</li>
 <li><del>function next player</del></li>
+
+Questions:
+<ul>
+<li>dead players can win anyway ?</li>
 </ul>

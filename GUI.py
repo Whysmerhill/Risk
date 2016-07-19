@@ -76,6 +76,11 @@ def color_surface(sprite,color,alpha):
 				sprite.map_pays.set_at((sprite.bounds.x+x,sprite.bounds.y+y),color)
 				sprite.map_pays.set_alpha(alpha)
 
+def add_text(layer,message,pos,font,color=(0,0,0)):
+	textSurf, textRect = text_objects(message, font,color)
+	textRect.topleft = pos
+	layer.append([textSurf, textRect])
+
 def display_troupes(textes,sprites,Map):
 	smallText = pygame.font.Font("freesansbold.ttf",16)
 	for sprite in sprites:
@@ -89,7 +94,7 @@ def display_win(final_layer,players):
 	marge=50
 	pos=(200,200)
 	for p in players:
-		if p.obj.get_state()==False:
+		if p.obj.get_state()==True:
 			p_win=p
 			#player win
 			textSurf, textRect = text_objects(p_win.name+' win', bigText,p_win.color)
@@ -102,9 +107,17 @@ def display_win(final_layer,players):
 			pos=(pos[0],pos[1]+marge)
 			final_layer.append([textSurf, textRect])
 
-def display_help():
-	#TODO
-	pass
+def display_help(final_layer,colormap):
+	bigText = pygame.font.Font("freesansbold.ttf",42)
+	marge=50
+	pos=(200,200)
+	add_text(final_layer,'ESC : exit game',pos,bigText,colormap.white)
+	pos=(pos[0],pos[1]+marge)
+	add_text(final_layer,'n : next phase',pos,bigText,colormap.white)
+	pos=(pos[0],pos[1]+marge)
+	add_text(final_layer,'p : next player turn',pos,bigText,colormap.white)
+	pos=(pos[0],pos[1]+marge)
+	add_text(final_layer,'h : show/hide help menu',pos,bigText,colormap.white)
 
 def display_hud(t_hud,turns,pos):
 	smallText = pygame.font.Font("freesansbold.ttf",16)
@@ -163,6 +176,11 @@ def display_hud(t_hud,turns,pos):
 		textRect.topleft = pos
 		t_hud.append([textSurf, textRect])
 
+def display_continent(turns,temp_layer,sprites_pays_masque):
+	c=turns.map.continents[3]
+	for p in c.pays:
+		temp_layer.append(next((x.map_pays for x in sprites_pays_masque if x.id == p.id), None))
+
 class GamePara():
 	def __init__(self):
 		self.nb_joueurs=0
@@ -205,6 +223,7 @@ class CurrentWindow():
 		sprite_select=-1
 		glob_pays=glob.glob(PATH_MAP+"*.png")
 		sprites_pays=[]
+		help_menu=False
 		#sprites de passage
 		sprites_pays_masque=[]
 		#chagement des sprites de pays
@@ -240,9 +259,9 @@ class CurrentWindow():
 						select=False
 						sprite_select=0
 					if event.key == K_w:
-						self.turns.game_finish=False
-					if event.key == K_h:
 						self.turns.game_finish=True
+					if event.key == K_h:
+						help_menu = not help_menu
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
 			for sprite in sprites_pays:
@@ -268,6 +287,20 @@ class CurrentWindow():
 				win_screen.set_alpha(180)
 				self.final_layer.append([win_screen,(0,0)])
 				display_win(self.final_layer,self.players)
+			else:
+				#ecran d'aide
+				if help_menu:
+					self.final_layer=[]
+					win_screen = pygame.Surface(self.fenetre.get_size())
+					win_screen = win_screen.convert()
+					win_screen.fill(colormap.black)
+					win_screen.set_alpha(180)
+					self.final_layer.append([win_screen,(0,0)])
+					#display_help(self.final_layer,colormap)
+					self.tmp=[]
+					display_continent(self.turns,self.tmp,sprites_pays_masque)
+				else:
+					self.final_layer=[]
 
 			#pygame.display.flip()
 			mouse = pygame.mouse.get_pos()
@@ -284,8 +317,8 @@ class CurrentWindow():
 						# 	self.fenetre.blit(sprite_bis.map_pays,(0,0))
 						# 	pygame.display.flip()
 						if sprite.id != sprite_select:
-								self.fenetre.blit(sprites_pays_masque[idx].map_pays,(0,0))
-								pygame.display.flip()
+							self.fenetre.blit(sprites_pays_masque[idx].map_pays,(0,0))
+							pygame.display.flip()
 						click=pygame.mouse.get_pressed()
 						if self.turns.list_phase[self.turns.phase] == 'placement':
 							if click[0]==1:
@@ -383,7 +416,7 @@ if __name__ == '__main__':
 	print("== Tests unitaires ==")
 	M=Map('Terre')
 	Continents=M.continents
-	T=Turns(3,M)
+	T=Turns(6,M)
 	T.start_deploy()
 	print(T.distrib_pays(M.pays))
 	T.print_players()
@@ -392,9 +425,15 @@ if __name__ == '__main__':
 	T.players[0].color=Colors.dark_purple
 	T.players[1].color=Colors.dark_green
 	T.players[2].color=Colors.dark_red
+	T.players[3].color=Colors.white
+	T.players[4].color=Colors.yellow
+	T.players[5].color=Colors.cian
 	T.players[0].name='nico'
 	T.players[1].name='nono'
 	T.players[2].name='jojo'
+	T.players[3].name='wis'
+	T.players[4].name='gogor'
+	T.players[5].name='pilou'
 	# T.players[3].color=grey
 
 	pygame.init()
