@@ -62,6 +62,7 @@ def color_surface(surface,color):
 			if surface.get_at((x,y))!=(0,0,0):
 				surface.set_at((x,y),color)
 
+#useless?
 def colorize(image, newColor):
     # zero out RGB values
     image.fill((0, 0, 0, 255), None, pygame.BLEND_RGBA_MULT)
@@ -82,6 +83,28 @@ def display_troupes(textes,sprites,Map):
 		textSurf, textRect = text_objects(str(pays.nb_troupes), smallText)
 		textRect.center = sprite.bounds.center
 		textes.append([textSurf, textRect])
+
+def display_win(final_layer,players):
+	bigText = pygame.font.Font("freesansbold.ttf",42)
+	marge=50
+	pos=(200,200)
+	for p in players:
+		if p.obj.get_state()==False:
+			p_win=p
+			#player win
+			textSurf, textRect = text_objects(p_win.name+' win', bigText,p_win.color)
+			textRect.topleft = pos
+			pos=(pos[0],pos[1]+marge)
+			final_layer.append([textSurf, textRect])
+			#objective
+			textSurf, textRect = text_objects('Objective '+p_win.obj.description, bigText,p_win.color)
+			textRect.topleft = pos
+			pos=(pos[0],pos[1]+marge)
+			final_layer.append([textSurf, textRect])
+
+def display_help():
+	#TODO
+	pass
 
 def display_hud(t_hud,turns,pos):
 	smallText = pygame.font.Font("freesansbold.ttf",16)
@@ -211,6 +234,11 @@ class CurrentWindow():
 						self.tmp=[]
 						select=False
 						sprite_select=0
+					if event.key == K_p:
+						self.turns.next_player()
+						self.tmp=[]
+						select=False
+						sprite_select=0
 					if event.key == K_w:
 						self.turns.game_finish=False
 					if event.key == K_h:
@@ -233,11 +261,13 @@ class CurrentWindow():
 
 			#Ecran de victoire lorsqu'un joueur gagne
 			if self.turns.game_finish==True:
-				# sprites_pays=[]
+				self.final_layer=[]
 				win_screen = pygame.Surface(self.fenetre.get_size())
 				win_screen = win_screen.convert()
 				win_screen.fill(colormap.black)
+				win_screen.set_alpha(127)
 				self.final_layer.append([win_screen,(0,0)])
+				display_win(self.final_layer,self.players)
 
 			#pygame.display.flip()
 			mouse = pygame.mouse.get_pos()

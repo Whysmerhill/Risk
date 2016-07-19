@@ -7,6 +7,7 @@ Shortcut:
 <ul>
 <li>ESC : quit</li>
 <li>n : next phase</li>
+<li>p : next player turn</li>
 </ul>
 
 Known bug:
@@ -27,9 +28,9 @@ TODO:
 <li>limit number of bonus card to five</li>
 <li>make continent appear when you higlight continent or objectives</li>
 <li><del>finish game when a player achieve is goal</del></li>
-<li>make a victory screen</li>
+<li><del>make a victory screen</del></li>
 <li>help menu</li>
 <del><li>give goals to player</li></del>
 <li>correct continents goals</li>
-<li>fonction next player</li>
+<li><del>fonction next player</del></li>
 </ul>

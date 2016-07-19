@@ -55,6 +55,9 @@ class Player():
 		if cards[0]!=cards[1] and cards[1]!=cards[2] and cards[0]!=cards[2]:
 			self.nb_troupes+=cards[0].max_bonus
 
+	def del_card(self,card_index):
+		self.cards.pop(card_index)
+
 	def print_carac(self):
 		print(self.id,self.name,self.nb_troupes,self.sbyturn,self.pays)
 
@@ -272,8 +275,31 @@ class Turns():
 		print(self.list_phase[self.phase])
 
 	def next_player(self):
-		#TODO
-		pass
+		if self.num==0: #phase de placement initiale
+			self.id_ordre=(self.id_ordre+1)%len(self.ordre)
+			if self.id_ordre==0:
+				self.num+=1
+				self.phase=(self.phase+1)%len(self.list_phase)
+		elif self.num==1:#on saute la phase de placement
+			self.phase=1
+			self.id_ordre=(self.id_ordre+1)%len(self.ordre)
+			#mise a jour du booleen de pays capture
+			self.players[self.player_turn-1].win_land=False
+			#mise a jour du nombre de troupes dispos : renforts de débuts de tour
+			self.players[self.player_turn-1].nb_troupes+=self.players[self.player_turn-1].sbyturn
+			if self.id_ordre==0:
+				self.num+=1
+				self.phase=0
+		else:
+			#on passe au tours du joueur suivant
+			self.id_ordre=(self.id_ordre+1)%len(self.ordre)
+			self.phase=0
+			#mise a jour du booleen de pays capture
+			self.players[self.player_turn-1].win_land=False
+			#mise a jour du nombre de troupes dispos : renforts de débuts de tour
+			self.players[self.player_turn-1].nb_troupes+=self.players[self.player_turn-1].sbyturn
+			if self.id_ordre==0:
+				self.num+=1
 
 	def start_deploy(self):
 		if self.nb_players==3:
@@ -362,9 +388,9 @@ class Turns():
 					self.players[pays_a.id_player-1].win_land=True
 					#si le joueur a plus de 5 cartes il doit se défausse
 					if len(self.players[pays_a.id_player-1].cards)>4:
-						raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
-					else:
-						self.players[pays_a.id_player-1].cards.append(Card())
+						self.players[pays_a.id_player-1].del_card(4)
+						#raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
+					self.players[pays_a.id_player-1].cards.append(Card())
 					print(self.players[pays_a.id_player-1].cards)
 				return True   #success
 
