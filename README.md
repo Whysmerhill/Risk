@@ -34,6 +34,7 @@ TODO:
 <del><li>give goals to player</li></del>
 <li>correct continents goals</li>
 <li><del>function next player</del></li>
+</ul>
 
 Questions:
 <ul>
