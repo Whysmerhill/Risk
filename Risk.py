@@ -164,9 +164,12 @@ class Objective():
 			for i in range(0,len(self.continents)):
 				tmp_str+=' '+str(self.continents[i].name)
 			return tmp_str
-		if self.type=='capture pays':
-			return 'Capturer '+str(self.nbpays)+' pays'
-		if self.type=='destroy':
+		elif self.type=='capture pays':
+			tmp_str = 'Capturer '+str(self.nbpays)+' pays' 
+			if self.nbtroupes>1:
+				tmp_str+=' avec '+str(self.nbtroupes)+' soldats'
+			return tmp_str
+		elif self.type=='destroy':
 			if self.target.name=='':
 				return 'Detruire '+str(self.target.id)
 			else:

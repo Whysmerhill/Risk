@@ -176,9 +176,8 @@ def display_hud(t_hud,turns,pos):
 		textRect.topleft = pos
 		t_hud.append([textSurf, textRect])
 
-def display_continent(turns,temp_layer,sprites_pays_masque):
-	c=turns.map.continents[3]
-	for p in c.pays:
+def display_continent(cont,temp_layer,sprites_pays_masque):
+	for p in cont.pays:
 		temp_layer.append(next((x.map_pays for x in sprites_pays_masque if x.id == p.id), None))
 
 class GamePara():
@@ -224,6 +223,7 @@ class CurrentWindow():
 		glob_pays=glob.glob(PATH_MAP+"*.png")
 		sprites_pays=[]
 		help_menu=False
+		id_c=0
 		#sprites de passage
 		sprites_pays_masque=[]
 		#chagement des sprites de pays
@@ -262,6 +262,10 @@ class CurrentWindow():
 						self.turns.game_finish=True
 					if event.key == K_h:
 						help_menu = not help_menu
+					if event.key == K_c:
+						self.tmp=[]
+						display_continent(self.turns.map.continents[id_c],self.tmp,sprites_pays_masque)
+						id_c=(id_c+1)%len(self.turns.map.continents)
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
 			for sprite in sprites_pays:
@@ -296,9 +300,7 @@ class CurrentWindow():
 					win_screen.fill(colormap.black)
 					win_screen.set_alpha(180)
 					self.final_layer.append([win_screen,(0,0)])
-					#display_help(self.final_layer,colormap)
-					self.tmp=[]
-					display_continent(self.turns,self.tmp,sprites_pays_masque)
+					display_help(self.final_layer,colormap)
 				else:
 					self.final_layer=[]
 

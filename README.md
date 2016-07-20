@@ -9,6 +9,7 @@ Shortcut:
 <li>n : next phase</li>
 <li>p : next player turn</li>
 <li>h : show/hide help menu</li>
+<li>c : show/hide continents</li>
 </ul>
 
 Known bug:
@@ -28,6 +29,7 @@ TODO:
 <li>make bonus card usable</li>
 <li>limit number of bonus card to five</li>
 <li>make continent appear when you higlight continent or objectives</li>
+<li>players have to deploy troops</li>
 <del><li>give bonus card if player win a territory</li></del>
 <li><del>finish game when a player achieve is goal</del></li>
 <li><del>make a victory screen</del></li>
