@@ -14,8 +14,7 @@ Shortcut:
 
 Known bug:
 <ul>
-<li>no path mexic->argentine</li>
-<li>encoding goals bug</li>
+<li><del>no path mexic->argentine</del></li>
 <li><del>turn 1 troops bug</del></li>
 <li><del>attack with 1 man land</del></li>
 </ul>
@@ -30,6 +29,9 @@ TODO:
 <li>limit number of bonus card to five</li>
 <li>make continent appear when you higlight continent or objectives</li>
 <li>debug mod</li>
+<li>check neighbor</li>
+<li>don't pass when you free move 0 units</li>
+<li>encoding for french</li>
 <li><del>correct continents goals</del></li>
 <li><del>players have to deploy troops</del></li>
 <del><li>give bonus card if player win a territory</li></del>
