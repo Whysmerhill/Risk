@@ -108,18 +108,18 @@ class Objective():
 	def gen_obj(self):
 		if self.type=='capture continents':
 			self.continents=[]
+			self.other_cont=False
 			self.nbtroupes=1
 			r_choice=random.choice(self.goal.randrange[0])
 			self.goal.randrange[0].remove(r_choice) #on enleve la combinaison choisi pour eviter les doublons de missions
 			if r_choice==0:
 				self.continents.append(self.goal.map.continents[4])
 				self.continents.append(self.goal.map.continents[5])
-				self.continents.append(self.goal.map.continents[random.randint(0,3)])
+				self.other_cont=True
 			elif r_choice==1:
 				self.continents.append(self.goal.map.continents[4])
 				self.continents.append(self.goal.map.continents[2])
-				rand_nb=[0,1,3,5]
-				self.continents.append(self.goal.map.continents[random.choice(rand_nb)])
+				self.other_cont=True
 			elif r_choice==2:
 				self.continents.append(self.goal.map.continents[1])
 				self.continents.append(self.goal.map.continents[0])
@@ -163,6 +163,8 @@ class Objective():
 			tmp_str='Capturer'
 			for i in range(0,len(self.continents)):
 				tmp_str+=' '+str(self.continents[i].name)
+			if self.other_cont:
+				tmp_str+=' and another cont'
 			return tmp_str
 		elif self.type=='capture pays':
 			tmp_str = 'Capturer '+str(self.nbpays)+' pays' 
@@ -203,9 +205,26 @@ class Objective():
 					cont_occupe=False
 			if cont_occupe==True:
 				nb_occupe+=1
-		if nb_occupe==len(continents):
-			self.goal.turns.game_finish=True
-			return True
+		if self.other_cont:
+			#player must have another continent
+			additionnal_cont=0
+			other_conts=[x for x in self.goal.map.continents if x not in continents]
+			for c in other_conts:
+				cont_occupe=True
+				for p in c.pays:
+					if p.nb_troupes<nb_troupes or p.id_player!=self.player.id:
+						cont_occupe=False
+				if cont_occupe==True:
+					additionnal_cont+=1
+		if nb_occupe == len(continents):
+			if self.other_cont and additionnal_cont>0:
+				self.goal.turns.game_finish=True
+				return True
+			elif not self.other_cont:
+				self.goal.turns.game_finish=True
+				return True
+			else:
+				return False
 		else:
 			return False
 
@@ -250,6 +269,8 @@ class Turns():
 		self._player_turn=self.ordre[self.id_ordre]
 
 	def next(self):
+		if self.players[self.player_turn-1].nb_troupes>0:
+			raise ValueError('Need to deploy',self.players[self.player_turn-1].nb_troupes)
 		if self.num==0: #phase de placement initiale
 			self.id_ordre=(self.id_ordre+1)%len(self.ordre)
 			if self.id_ordre==0:
@@ -281,6 +302,8 @@ class Turns():
 		print(self.list_phase[self.phase])
 
 	def next_player(self):
+		# if self.players[self.player_turn-1].nb_troupes>0:
+		# 	raise ValueError('Need to deploy',self.players[self.player_turn-1].nb_troupes)
 		if self.num==0: #phase de placement initiale
 			self.id_ordre=(self.id_ordre+1)%len(self.ordre)
 			if self.id_ordre==0:
@@ -291,11 +314,12 @@ class Turns():
 			self.id_ordre=(self.id_ordre+1)%len(self.ordre)
 			#mise a jour du booleen de pays capture
 			self.players[self.player_turn-1].win_land=False
-			#mise a jour du nombre de troupes dispos : renforts de débuts de tour
-			self.players[self.player_turn-1].nb_troupes+=self.players[self.player_turn-1].sbyturn
 			if self.id_ordre==0:
 				self.num+=1
 				self.phase=0
+				#mise a jour du nombre de troupes dispos : renforts de débuts de tour
+				self.players[self.player_turn-1].nb_troupes+=self.players[self.player_turn-1].sbyturn
+
 		else:
 			#on passe au tours du joueur suivant
 			self.id_ordre=(self.id_ordre+1)%len(self.ordre)

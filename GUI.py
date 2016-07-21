@@ -152,15 +152,15 @@ def display_hud(t_hud,turns,pos):
 	t_hud.append([textSurf, textRect])
 	try:
 		textSurf, textRect = text_objects(str(turns.players[turns.player_turn-1].obj.description), smallText)
-	except AttributeError:
-		pass
+	except AttributeError as e:
+		print (e.args)
 	pos=(col[1],row+marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
 	try:
 		textSurf, textRect = text_objects('Statut : '+str(turns.players[turns.player_turn-1].obj.get_state()), smallText)
-	except AttributeError:
-		pass
+	except AttributeError as e:
+		print (e.args)
 	pos=(col[1],row+2*marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
@@ -249,12 +249,18 @@ class CurrentWindow():
 					if event.key == K_ESCAPE:
 						afficher = 0
 					if event.key == K_n:
-						self.turns.next()
+						try:
+							self.turns.next()
+						except ValueError as e:
+							print(e.args)
 						self.tmp=[]
 						select=False
 						sprite_select=0
 					if event.key == K_p:
-						self.turns.next_player()
+						try:
+							self.turns.next_player()
+						except ValueError as e:
+							print(e.args)
 						self.tmp=[]
 						select=False
 						sprite_select=0
