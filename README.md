@@ -16,7 +16,7 @@ Known bug:
 <ul>
 <li>no path mexic->argentine</li>
 <li>encoding goals bug</li>
-<li>turn 1 troops bug</li>
+<li><del>turn 1 troops bug</del></li>
 <li><del>attack with 1 man land</del></li>
 </ul>
 
