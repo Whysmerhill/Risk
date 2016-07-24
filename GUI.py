@@ -272,6 +272,8 @@ class CurrentWindow():
 						self.tmp=[]
 						display_continent(self.turns.map.continents[id_c],self.tmp,sprites_pays_masque)
 						id_c=(id_c+1)%len(self.turns.map.continents)
+					if event.key == K_u:
+						self.turns.players[self.turns.player_turn-1].use_best_cards()
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
 			for sprite in sprites_pays:
