@@ -144,6 +144,10 @@ def display_hud(t_hud,turns,pos):
 	pos=(pos[0],pos[1]+marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
+	textSurf, textRect = text_objects('Soldats par click : '+str(Win.nb_units), smallText)
+	pos=(pos[0],pos[1]+marge)
+	textRect.topleft = pos
+	t_hud.append([textSurf, textRect])
 
 	#partie objectifs
 	textSurf, textRect = text_objects('Objectif(s) ', smallText)
@@ -216,6 +220,27 @@ class CurrentWindow():
 		self.tmp=[]#liste des spirtes temporaires
 		self.t_hud=[]#liste des textes HUD
 		self.final_layer=[]#derniere couche d'affichage, utilisé pour le winning screen et le menu d'aide
+		self._nb_units=1
+		self.pays_select=None
+
+	@property
+	def nb_units(self):
+		return self._nb_units
+
+	@nb_units.setter #attention incompatible tel quel python 2, necessite d'heriter de la class objet
+	def nb_units(self, value):
+		if self.turns.phase==0:#regles du setter pendant la phase de deploiment
+			if value<1:
+				self._nb_units = 1
+				raise ValueError('Too few troops',value)
+			elif value>self.players[self.turns.player_turn-1].nb_troupes:
+				self._nb_units = self.players[self.turns.player_turn-1].nb_troupes
+				raise ValueError('Too much troops',value)
+		else:#regles du setter pendant les autres phases
+			if value>self.pays_select.nb_troupes-1:
+				self._nb_units = self.pays_select.nb_troupes-1#on ne peut attaquer/deplacer que avec n-1 troupes
+				raise ValueError('Too much troops',value)
+		self._nb_units = value
 
 	def color_players(self,sprites):
 		for pl in self.players:
@@ -258,7 +283,7 @@ class CurrentWindow():
 				elif event.type == KEYDOWN:
 					if event.key == K_ESCAPE:
 						afficher = 0
-					if event.key == K_n:
+					elif event.key == K_n:
 						try:
 							self.turns.next()
 						except ValueError as e:
@@ -266,7 +291,7 @@ class CurrentWindow():
 						self.tmp=[]
 						select=False
 						sprite_select=0
-					if event.key == K_p:
+					elif event.key == K_p:
 						try:
 							self.turns.next_player()
 						except ValueError as e:
@@ -274,16 +299,26 @@ class CurrentWindow():
 						self.tmp=[]
 						select=False
 						sprite_select=0
-					if event.key == K_w:
+					elif event.key == K_w:
 						self.turns.game_finish=True
-					if event.key == K_h:
+					elif event.key == K_h:
 						help_menu = not help_menu
-					if event.key == K_c:
+					elif event.key == K_c:
 						self.tmp=[]
 						display_continent(self.turns.map.continents[id_c],self.tmp,sprites_pays_masque)
 						id_c=(id_c+1)%len(self.turns.map.continents)
-					if event.key == K_u:
+					elif event.key == K_u:
 						self.turns.players[self.turns.player_turn-1].use_best_cards()
+				elif event.type == MOUSEBUTTONDOWN:
+					try:
+						if event.button==4:#scroll wheel up
+							self.nb_units+=1
+						elif event.button==5:#scroll wheel down
+							self.nb_units-=1
+					except AttributeError as e:
+						print('You should select a country first')
+					except ValueError as e:
+						print(e.args)
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
 			for sprite in sprites_pays:
@@ -345,12 +380,17 @@ class CurrentWindow():
 								pays=next((p for p in self.map.pays if p.id == sprite.id), None) 
 								if pays.id_player==self.turns.player_turn:
 									#mise a jout du nombre de troupes
-									self.turns.placer(pays,10)
+									self.turns.placer(pays,self.nb_units)
+									# try:
+									# 	self.nb_units=self.players[self.turns.player_turn-1].nb_troupes
+									# except ValueError as e:
+									# 	print(e.args)
 								else:
 									print('pays n\'appartenant pas au joueur')
 						elif self.turns.list_phase[self.turns.phase] == 'attaque':
 							if click[0]==1 and not select:
 								pays1=next((p for p in self.map.pays if p.id == sprite.id), None)
+								self.pays_select=pays1
 								if pays1.id_player==self.turns.player_turn:
 									self.tmp.append(sprites_pays_masque[idx].map_pays)
 									select=True 
@@ -359,7 +399,7 @@ class CurrentWindow():
 								pays2=next((p for p in self.map.pays if p.id == sprite.id), None)
 								if pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
 									try:
-										atck=self.turns.attaque(pays1,pays2,pays1.nb_troupes-1)
+										atck=self.turns.attaque(pays1,pays2,self.nb_units)
 									except ValueError as e:
 										print(e.args)
 										atck=False
@@ -370,6 +410,7 @@ class CurrentWindow():
 						elif self.turns.list_phase[self.turns.phase] == 'deplacement':
 							if click[0]==1 and not select:
 								pays1=next((p for p in self.map.pays if p.id == sprite.id), None)
+								self.pays_select=pays1
 								self.tmp.append(sprites_pays_masque[idx].map_pays)
 								select=True 
 								sprite_select=sprite.id
@@ -380,7 +421,7 @@ class CurrentWindow():
 								sprite_select=0
 								self.tmp=[]
 								if chemin and pays2.id != pays1.id and pays1.nb_troupes>1:
-									self.turns.deplacer(pays1,pays2,pays1.nb_troupes-1)
+									self.turns.deplacer(pays1,pays2,self.nb_units)
 									self.turns.next()
 						#affichage des troupes
 						self.textes=[]

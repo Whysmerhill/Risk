@@ -443,8 +443,8 @@ class Turns():
 					self.players[pays_a.id_player-1].win_land=True
 					#si le joueur a plus de 5 cartes il doit se défausse
 					if len(self.players[pays_a.id_player-1].cards)>4:
-						self.players[pays_a.id_player-1].del_card(4)
-						#raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
+						self.players[pays_a.id_player-1].del_card(0)
+						#TODO raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
 					self.players[pays_a.id_player-1].cards.append(Card())
 					#print(self.players[pays_a.id_player-1].cards)
 				return True   #success
@@ -456,8 +456,7 @@ class Turns():
 	def placer(self,pays,nb_troupes):
 		#le player qui place voit son compteur décroitre
 		player=next((p for p in self.players if p.id == pays.id_player), None)
-		if(player.nb_troupes-nb_troupes<0):
-			print('pas assez de troupes')
+		if(player.nb_troupes-nb_troupes<=0):
 			pays.nb_troupes+=player.nb_troupes
 			player.nb_troupes-=player.nb_troupes
 			self.next()
