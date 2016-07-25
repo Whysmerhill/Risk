@@ -240,6 +240,9 @@ class CurrentWindow():
 			if value>self.pays_select.nb_troupes-1:
 				self._nb_units = self.pays_select.nb_troupes-1#on ne peut attaquer/deplacer que avec n-1 troupes
 				raise ValueError('Too much troops',value)
+			elif value<0
+				self._nb_units = 0
+				raise ValueError('Too few troops',value)
 		self._nb_units = value
 
 	def color_players(self,sprites):
