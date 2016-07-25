@@ -52,7 +52,6 @@ class Player():
 		nb_s=[x for x in self.cards if x.type==x.types[0]]
 		nb_h=[x for x in self.cards if x.type==x.types[1]]
 		nb_c=[x for x in self.cards if x.type==x.types[2]]
-		print(nb_s,nb_h,nb_c)
 		if len(nb_s)>0 and len(nb_h)>0 and len(nb_c)>0:#si triplé déparaillé
 			self.use_cards([nb_s[0],nb_h[0],nb_c[0]])
 		elif len(nb_c)>2:#si canon
@@ -62,19 +61,19 @@ class Player():
 		elif len(nb_s)>2:#si soldats
 			self.use_cards([nb_s[0],nb_s[1],nb_s[2]])
 		else:#sinon pas de combi possible
-			#raise
+			#TODO raise
 			print('Pas de combianaison disponibles')
 
 	#take only 3 cards in input
 	def use_cards(self,cards):
 		#triplé
-		if cards[0]==cards[1] and cards[1]==cards[2] and cards[0]==cards[2]:
+		if cards[0].type==cards[1].type and cards[1].type==cards[2].type and cards[0].type==cards[2].type:
 			self.nb_troupes+=cards[0].bonus
 			self.cards.remove(cards[0])
 			self.cards.remove(cards[1])
 			self.cards.remove(cards[2])
 		#deparaillé
-		elif cards[0]!=cards[1] and cards[1]!=cards[2] and cards[0]!=cards[2]:
+		elif cards[0].type!=cards[1].type and cards[1].type!=cards[2].type and cards[0].type!=cards[2].type:
 			self.nb_troupes+=cards[0].max_bonus
 			self.cards.remove(cards[0])
 			self.cards.remove(cards[1])
@@ -267,6 +266,7 @@ class Card():
 		rand=random.randint(0,2)
 		self.type=self.types[rand]
 		self.bonus=bonus[rand]
+		print(self.bonus)
 		self.max_bonus=bonus[-1]
 	def __repr__(self):
 		return str(self.type)
@@ -446,7 +446,7 @@ class Turns():
 						self.players[pays_a.id_player-1].del_card(4)
 						#raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
 					self.players[pays_a.id_player-1].cards.append(Card())
-					print(self.players[pays_a.id_player-1].cards)
+					#print(self.players[pays_a.id_player-1].cards)
 				return True   #success
 
 	def deplacer(self,pays_ori,pays_dest,nb_troupes):

@@ -165,6 +165,16 @@ def display_hud(t_hud,turns,pos):
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
 
+	#partie cartes
+	textSurf, textRect = text_objects('Cartes ', smallText)
+	pos=(col[1],row+3*marge)
+	textRect.topleft = pos
+	t_hud.append([textSurf, textRect])
+	textSurf, textRect = text_objects(str(turns.players[turns.player_turn-1].cards), smallText)
+	pos=(col[1],row+4*marge)
+	textRect.topleft = pos
+	t_hud.append([textSurf, textRect])
+
 	#partie bonus des continents
 	pos=(col[3],row)
 	textSurf, textRect = text_objects('Bonus Continents', smallText)
@@ -369,7 +379,7 @@ class CurrentWindow():
 								select=False
 								sprite_select=0
 								self.tmp=[]
-								if chemin and pays2.id != pays1.id:
+								if chemin and pays2.id != pays1.id and pays1.nb_troupes>1:
 									self.turns.deplacer(pays1,pays2,pays1.nb_troupes-1)
 									self.turns.next()
 						#affichage des troupes
@@ -426,7 +436,7 @@ if __name__ == '__main__':
 	print("== Tests unitaires ==")
 	M=Map('Terre')
 	Continents=M.continents
-	T=Turns(6,M)
+	T=Turns(3,M)
 	T.start_deploy()
 	print(T.distrib_pays(M.pays))
 	T.print_players()
@@ -435,15 +445,15 @@ if __name__ == '__main__':
 	T.players[0].color=Colors.dark_purple
 	T.players[1].color=Colors.dark_green
 	T.players[2].color=Colors.dark_red
-	T.players[3].color=Colors.white
-	T.players[4].color=Colors.yellow
-	T.players[5].color=Colors.cian
+	# T.players[3].color=Colors.white
+	# T.players[4].color=Colors.yellow
+	# T.players[5].color=Colors.cian
 	T.players[0].name='nico'
 	T.players[1].name='nono'
 	T.players[2].name='jojo'
-	T.players[3].name='wis'
-	T.players[4].name='gogor'
-	T.players[5].name='pilou'
+	# T.players[3].name='wis'
+	# T.players[4].name='gogor'
+	# T.players[5].name='pilou'
 	# T.players[3].color=grey
 
 	pygame.init()

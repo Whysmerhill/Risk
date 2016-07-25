@@ -25,13 +25,13 @@ TODO:
 <li>allow to chose number of soldier moved</li>
 <li>allow to move a number of soldier after a win</li>
 <li>show dice results</li>
-<li>make bonus card usable</li>
 <li>limit number of bonus card to five</li>
 <li>make continent appear when you higlight continent or objectives</li>
 <li>debug mod</li>
 <li>check neighbor</li>
-<li>don't pass when you free move 0 units</li>
 <li>encoding for french</li>
+<li><del>don't pass when you free move 0 units</del></li>
+<li><del>make bonus card usable</del></li>
 <li><del>correct continents goals</del></li>
 <li><del>players have to deploy troops</del></li>
 <del><li>give bonus card if player win a territory</li></del>
