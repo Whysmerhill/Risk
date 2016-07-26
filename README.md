@@ -10,10 +10,13 @@ Shortcut:
 <li>p : next player turn</li>
 <li>h : show/hide help menu</li>
 <li>c : show/hide continents</li>
+<li>rigth click : unselect</li>
+<li>mouse wheel : increase/decrease number of units select</li>
 </ul>
 
 Known bug:
 <ul>
+<li>bug map, black color</li>
 <li><del>no path mexic->argentine</del></li>
 <li><del>turn 1 troops bug</del></li>
 <li><del>attack with 1 man land</del></li>
@@ -21,15 +24,15 @@ Known bug:
 
 TODO:
 <ul>
-<li>allow to chose number of attacker</li>
-<li>allow to chose number of soldier moved</li>
-<li>allow to move a number of soldier after a win</li>
 <li>show dice results</li>
 <li>limit number of bonus card to five</li>
 <li>make continent appear when you higlight continent or objectives</li>
 <li>debug mod</li>
 <li>check neighbor</li>
 <li>encoding for french</li>
+<li><del>allow to move a number of soldier after a win</del></li>
+<li><del>allow to chose number of attacker</del></li>
+<li><del>allow to chose number of soldier moved</del></li>
 <li><del>don't pass when you free move 0 units</del></li>
 <li><del>make bonus card usable</del></li>
 <li><del>correct continents goals</del></li>

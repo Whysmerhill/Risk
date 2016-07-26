@@ -9,7 +9,9 @@ import glob
 
 PATH_IMG='Pictures/'
 PATH_MAP='Pictures/Maps/'
-MAP_IMG='Risk_game_map_fixed.bmp'
+PATH_BCK='Pictures/Backgrounds/'
+MAP_IMG='Risk_game_map_fixed.png'
+BCK_IMG='background5.jpg'
 f_w=1280
 f_h=800
 
@@ -144,7 +146,7 @@ def display_hud(t_hud,turns,pos):
 	pos=(pos[0],pos[1]+marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
-	textSurf, textRect = text_objects('Soldats par click : '+str(Win.nb_units), smallText)
+	textSurf, textRect = text_objects('Soldats selectionnés : '+str(Win.nb_units), smallText)
 	pos=(pos[0],pos[1]+marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
@@ -220,8 +222,8 @@ class CurrentWindow():
 		self.tmp=[]#liste des spirtes temporaires
 		self.t_hud=[]#liste des textes HUD
 		self.final_layer=[]#derniere couche d'affichage, utilisé pour le winning screen et le menu d'aide
-		self._nb_units=1
-		self.pays_select=None
+		self._nb_units=5 
+		self.pays_select=None #pays selectionné
 
 	@property
 	def nb_units(self):
@@ -237,12 +239,12 @@ class CurrentWindow():
 				self._nb_units = self.players[self.turns.player_turn-1].nb_troupes
 				raise ValueError('Too much troops',value)
 		else:#regles du setter pendant les autres phases
-			if value>self.pays_select.nb_troupes-1:
-				self._nb_units = self.pays_select.nb_troupes-1#on ne peut attaquer/deplacer que avec n-1 troupes
-				raise ValueError('Too much troops',value)
-			elif value<0
+			if value<0:
 				self._nb_units = 0
 				raise ValueError('Too few troops',value)
+			elif value>self.pays_select.nb_troupes-1:
+				self._nb_units = self.pays_select.nb_troupes-1#on ne peut attaquer/deplacer que avec n-1 troupes
+				raise ValueError('Too much troops',value)
 		self._nb_units = value
 
 	def color_players(self,sprites):
@@ -257,6 +259,7 @@ class CurrentWindow():
 		colormap=ColorMap()
 		afficher=1
 		select=False
+		atck_winmove=False
 		sprite_select=-1
 		glob_pays=glob.glob(PATH_MAP+"*.png")
 		sprites_pays=[]
@@ -314,7 +317,11 @@ class CurrentWindow():
 						self.turns.players[self.turns.player_turn-1].use_best_cards()
 				elif event.type == MOUSEBUTTONDOWN:
 					try:
-						if event.button==4:#scroll wheel up
+						if event.button==3: #rigth click to unselect
+							self.tmp=[]
+							select=False
+							sprite_select=0
+						elif event.button==4:#scroll wheel up
 							self.nb_units+=1
 						elif event.button==5:#scroll wheel down
 							self.nb_units-=1
@@ -394,36 +401,53 @@ class CurrentWindow():
 							if click[0]==1 and not select:
 								pays1=next((p for p in self.map.pays if p.id == sprite.id), None)
 								self.pays_select=pays1
-								if pays1.id_player==self.turns.player_turn:
+								if pays1.id_player==self.turns.player_turn and pays1.nb_troupes>1:
+									self.nb_units=pays1.nb_troupes-1
 									self.tmp.append(sprites_pays_masque[idx].map_pays)
 									select=True 
 									sprite_select=sprite.id
 							elif click[0]==1:
 								pays2=next((p for p in self.map.pays if p.id == sprite.id), None)
-								if pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
+								if atck_winmove and pays2 == pays_atck and pays1.nb_troupes>1:
+									self.turns.deplacer(pays1,pays2,self.nb_units)
+									select=False
+									self.tmp=[]
+									atck_winmove=False
+								elif atck_winmove:
+									select=False
+									self.tmp=[]
+									atck_winmove=False
+								elif pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
 									try:
 										atck=self.turns.attaque(pays1,pays2,self.nb_units)
 									except ValueError as e:
 										print(e.args)
 										atck=False
-									select=False
-									self.tmp=[]
+										select=False
+										self.tmp=[]
 									if atck:
 										color_surface(sprite,self.turns.players[self.turns.player_turn-1].color,255)
+										atck_winmove=True
+										pays_atck=pays2
+									else:
+										select=False
+										self.tmp=[]
 						elif self.turns.list_phase[self.turns.phase] == 'deplacement':
 							if click[0]==1 and not select:
 								pays1=next((p for p in self.map.pays if p.id == sprite.id), None)
 								self.pays_select=pays1
-								self.tmp.append(sprites_pays_masque[idx].map_pays)
-								select=True 
-								sprite_select=sprite.id
+								if pays1.id_player==self.turns.player_turn and pays1.nb_troupes>1:
+									self.nb_units=pays1.nb_troupes-1
+									self.tmp.append(sprites_pays_masque[idx].map_pays)
+									select=True 
+									sprite_select=sprite.id
 							elif click[0]==1:
 								pays2=next((p for p in self.map.pays if p.id == sprite.id), None)
 								chemin=self.map.chemin_exist(self.turns.players[self.turns.player_turn-1].pays,pays1,pays2)
 								select=False
 								sprite_select=0
 								self.tmp=[]
-								if chemin and pays2.id != pays1.id and pays1.nb_troupes>1:
+								if chemin and pays2.id != pays1.id:
 									self.turns.deplacer(pays1,pays2,self.nb_units)
 									self.turns.next()
 						#affichage des troupes
@@ -436,7 +460,6 @@ class CurrentWindow():
 			self.t_hud=[]
 			display_hud(self.t_hud,self.turns,(10,sprites_pays[0].map_pays.get_height()+10))
 			pygame.display.flip()
-
 
 def menu(Win):
 	barre=pygame.image.load(PATH_IMG+"barre.png").convert()
@@ -453,12 +476,19 @@ def roll_dices(number,x,y):
 def start_game():
 	Win.surfaces=[]
 	#fond bleue
-	background = pygame.Surface(fenetre.get_size())
-	background = background.convert()
-	background.fill(blue)
+	# background = pygame.Surface(fenetre.get_size())
+	# background = background.convert()
+	# background.fill(blue)
+	#fond personnalisé
+	background=pygame.image.load(PATH_BCK+BCK_IMG).convert()
+	coeff=f_w/background.get_width() #adapte l'image selon la largeur
+	w=int(coeff*background.get_width())
+	h=int(coeff*background.get_height())
+	background=pygame.transform.scale(background,(w,h))
+
 	#map
 	map_monde=pygame.image.load(PATH_IMG+MAP_IMG).convert()
-	coeff=f_w/map_monde.get_width()
+	coeff=f_w/map_monde.get_width()#adapte l'image selon la largeur
 	w=int(coeff*map_monde.get_width())
 	h=int(coeff*map_monde.get_height())
 	map_monde=pygame.transform.scale(map_monde,(w,h))

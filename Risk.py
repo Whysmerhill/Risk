@@ -436,8 +436,8 @@ class Turns():
 				self.players[pays_d.id_player-1].pays.remove(pays_d.id)
 				#on change le player id 
 				pays_d.id_player=pays_a.id_player
-				#deplacement automatique du maximum
-				self.deplacer(pays_a,pays_d,pays_a.nb_troupes-1)
+				#deplacement automatique du nombre de troupes attaquante au dernier lancer de dés (1,2,3)
+				self.deplacer(pays_a,pays_d,dice_atck)
 				#on donne une carte au joueur attaquant si c'est son premier territoire capturé ce tour
 				if self.players[pays_a.id_player-1].win_land==False:
 					self.players[pays_a.id_player-1].win_land=True
