@@ -12,6 +12,7 @@ PATH_MAP='Pictures/Maps/'
 PATH_BCK='Pictures/Backgrounds/'
 MAP_IMG='Risk_game_map_fixed.png'
 BCK_IMG='background5.jpg'
+BAR_IMG='barre.png'
 f_w=1280
 f_h=800
 
@@ -227,7 +228,10 @@ class CurrentWindow():
 
 	@property
 	def nb_units(self):
-		return self._nb_units
+		if self.turns.phase==0:#regles du getter pendant la phase de deploiment
+			return min(self._nb_units,self.players[self.turns.player_turn-1].nb_troupes)#le joueur ne peut pas selectionner plus de troupes qu'il n'en possede 
+		else:
+			return self._nb_units
 
 	@nb_units.setter #attention incompatible tel quel python 2, necessite d'heriter de la class objet
 	def nb_units(self, value):
@@ -429,6 +433,7 @@ class CurrentWindow():
 										color_surface(sprite,self.turns.players[self.turns.player_turn-1].color,255)
 										atck_winmove=True
 										pays_atck=pays2
+										self.nb_units=pays1.nb_troupes-1
 									else:
 										select=False
 										self.tmp=[]
@@ -462,7 +467,7 @@ class CurrentWindow():
 			pygame.display.flip()
 
 def menu(Win):
-	barre=pygame.image.load(PATH_IMG+"barre.png").convert()
+	barre=pygame.image.load(PATH_IMG+BAR_IMG).convert()
 	r1=Win.fenetre.blit(barre,(0,0))
 	Win.surfaces.extend([[barre,r1]])
 
@@ -487,12 +492,12 @@ def start_game():
 	background=pygame.transform.scale(background,(w,h))
 
 	#map
-	map_monde=pygame.image.load(PATH_IMG+MAP_IMG).convert()
+	map_monde=pygame.image.load(PATH_IMG+MAP_IMG).convert_alpha()
 	coeff=f_w/map_monde.get_width()#adapte l'image selon la largeur
 	w=int(coeff*map_monde.get_width())
 	h=int(coeff*map_monde.get_height())
 	map_monde=pygame.transform.scale(map_monde,(w,h))
-	barre=pygame.image.load(PATH_IMG+"barre.png").convert()
+	barre=pygame.image.load(PATH_IMG+BAR_IMG).convert()
 	Win.fonctions=[]
 	Win.surfaces.extend([[background,(0,0)],[barre,(0,h)],[map_monde,(0,0)]])
 

@@ -16,7 +16,8 @@ Shortcut:
 
 Known bug:
 <ul>
-<li>bug map, black color</li>
+<li>text too long</li>
+<li><del>bug map, black color</del></li>
 <li><del>no path mexic->argentine</del></li>
 <li><del>turn 1 troops bug</del></li>
 <li><del>attack with 1 man land</del></li>
@@ -24,12 +25,13 @@ Known bug:
 
 TODO:
 <ul>
+<li>hide players secret informations</li>
 <li>show dice results</li>
-<li>limit number of bonus card to five</li>
-<li>make continent appear when you higlight continent or objectives</li>
+<li><del>limit number of bonus card to five</del></li>
 <li>debug mod</li>
 <li>check neighbor</li>
 <li>encoding for french</li>
+<li>make continent appear when you higlight continent or objectives</li>
 <li><del>allow to move a number of soldier after a win</del></li>
 <li><del>allow to chose number of attacker</del></li>
 <li><del>allow to chose number of soldier moved</del></li>
