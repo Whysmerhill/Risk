@@ -122,7 +122,7 @@ def display_help(final_layer,colormap):
 	pos=(pos[0],pos[1]+marge)
 	add_text(final_layer,'h : show/hide help menu',pos,bigText,colormap.white)
 
-def display_hud(t_hud,turns,pos):
+def display_hud(nb_units,t_hud,turns,pos):
 	smallText = pygame.font.Font("freesansbold.ttf",16)
 	marge=20
 	col=[0,300,600,700]
@@ -147,7 +147,7 @@ def display_hud(t_hud,turns,pos):
 	pos=(pos[0],pos[1]+marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
-	textSurf, textRect = text_objects('Soldats selectionnés : '+str(Win.nb_units), smallText)
+	textSurf, textRect = text_objects('Soldats selectionnes : '+str(nb_units), smallText)
 	pos=(pos[0],pos[1]+marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
@@ -328,7 +328,8 @@ class CurrentWindow():
 						elif event.button==4:#scroll wheel up
 							self.nb_units+=1
 						elif event.button==5:#scroll wheel down
-							self.nb_units-=1
+							if self.nb_units>0:
+								self.nb_units-=1
 					except AttributeError as e:
 						print('You should select a country first')
 					except ValueError as e:
@@ -463,7 +464,7 @@ class CurrentWindow():
 			#print('tour numero :', self.num,'ordre',self.ordre,'joueur tour', self.ordre[self.id_ordre])
 			#print(self.list_phase[self.phase])
 			self.t_hud=[]
-			display_hud(self.t_hud,self.turns,(10,sprites_pays[0].map_pays.get_height()+10))
+			display_hud(self.nb_units,self.t_hud,self.turns,(10,sprites_pays[0].map_pays.get_height()+10))
 			pygame.display.flip()
 
 def menu(Win):
