@@ -183,10 +183,11 @@ def display_hud(nb_units,t_hud,turns,pos,hide):
 	pos=(col[1],row+3*marge)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
-	textSurf, textRect = text_objects(str(turns.players[turns.player_turn-1].cards), smallText)
-	pos=(col[1],row+4*marge)
-	textRect.topleft = pos
-	t_hud.append([textSurf, textRect])
+	if hide==False:
+		textSurf, textRect = text_objects(str(turns.players[turns.player_turn-1].cards), smallText)
+		pos=(col[1],row+4*marge)
+		textRect.topleft = pos
+		t_hud.append([textSurf, textRect])
 
 	#partie bonus des continents
 	pos=(col[3],row)
