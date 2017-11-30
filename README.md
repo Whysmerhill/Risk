@@ -32,6 +32,7 @@ TODO:
 <li>check neighbor</li>
 <li>encoding for french</li>
 <li>make continent appear when you higlight continent or objectives</li>
+<li>negative number of players</li>
 <li><del>allow to move a number of soldier after a win</del></li>
 <li><del>allow to chose number of attacker</del></li>
 <li><del>allow to chose number of soldier moved</del></li>
