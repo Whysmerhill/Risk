@@ -121,8 +121,13 @@ def display_help(final_layer,colormap):
 	add_text(final_layer,'p : next player turn',pos,bigText,colormap.white)
 	pos=(pos[0],pos[1]+marge)
 	add_text(final_layer,'h : show/hide help menu',pos,bigText,colormap.white)
+	pos=(pos[0],pos[1]+marge)
+	add_text(final_layer,'d : show/hide quest',pos,bigText,colormap.white)
+	pos=(pos[0],pos[1]+marge)
+	add_text(final_layer,'u : use your cards',pos,bigText,colormap.white)
 
-def display_hud(nb_units,t_hud,turns,pos):
+
+def display_hud(nb_units,t_hud,turns,pos,hide):
 	smallText = pygame.font.Font("freesansbold.ttf",16)
 	marge=20
 	col=[0,300,600,700]
@@ -157,20 +162,21 @@ def display_hud(nb_units,t_hud,turns,pos):
 	pos=(col[1],row)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
-	try:
-		textSurf, textRect = text_objects(str(turns.players[turns.player_turn-1].obj.description), smallText)
-	except AttributeError as e:
-		print (e.args)
-	pos=(col[1],row+marge)
-	textRect.topleft = pos
-	t_hud.append([textSurf, textRect])
-	try:
-		textSurf, textRect = text_objects('Statut : '+str(turns.players[turns.player_turn-1].obj.get_state()), smallText)
-	except AttributeError as e:
-		print (e.args)
-	pos=(col[1],row+2*marge)
-	textRect.topleft = pos
-	t_hud.append([textSurf, textRect])
+	if hide==False:
+		try:
+			textSurf, textRect = text_objects(str(turns.players[turns.player_turn-1].obj.description), smallText)
+		except AttributeError as e:
+			print (e.args)
+		pos=(col[1],row+marge)
+		textRect.topleft = pos
+		t_hud.append([textSurf, textRect])
+		try:
+			textSurf, textRect = text_objects('Statut : '+str(turns.players[turns.player_turn-1].obj.get_state()), smallText)
+		except AttributeError as e:
+			print (e.args)
+		pos=(col[1],row+2*marge)
+		textRect.topleft = pos
+		t_hud.append([textSurf, textRect])
 
 	#partie cartes
 	textSurf, textRect = text_objects('Cartes ', smallText)
@@ -259,6 +265,30 @@ class CurrentWindow():
 				color_surface(sprite,pl.color,255)
 				#print(sprite.id,pays)
 
+	def start_game(self):
+		self.surfaces=[]
+		#fond bleue
+		# background = pygame.Surface(fenetre.get_size())
+		# background = background.convert()
+		# background.fill(blue)
+		#fond personnalisé
+		background=pygame.image.load(PATH_BCK+BCK_IMG).convert()
+		coeff=f_w/background.get_width() #adapte l'image selon la largeur
+		w=int(coeff*background.get_width())
+		h=int(coeff*background.get_height())
+		background=pygame.transform.scale(background,(w,h))
+
+		#map
+		map_monde=pygame.image.load(PATH_IMG+MAP_IMG).convert_alpha()
+		coeff=f_w/map_monde.get_width()#adapte l'image selon la largeur
+		w=int(coeff*map_monde.get_width())
+		h=int(coeff*map_monde.get_height())
+		map_monde=pygame.transform.scale(map_monde,(w,h))
+		barre=pygame.image.load(PATH_IMG+BAR_IMG).convert()
+		self.fonctions=[]
+		self.surfaces.extend([[background,(0,0)],[barre,(0,h)],[map_monde,(0,0)]])
+
+
 	def afficher(self,fonction=None):
 		colormap=ColorMap()
 		afficher=1
@@ -269,6 +299,7 @@ class CurrentWindow():
 		sprites_pays=[]
 		help_menu=False
 		id_c=0
+		hide=True
 		#sprites de passage
 		sprites_pays_masque=[]
 		#chagement des sprites de pays
@@ -317,8 +348,10 @@ class CurrentWindow():
 						self.tmp=[]
 						display_continent(self.turns.map.continents[id_c],self.tmp,sprites_pays_masque)
 						id_c=(id_c+1)%len(self.turns.map.continents)
-					elif event.key == K_u:
+					elif event.key == K_u:#utilisation des cartes
 						self.turns.players[self.turns.player_turn-1].use_best_cards()
+					elif event.key == K_d:#affichage/masquage des objectifs du joueurs
+						hide = not hide
 				elif event.type == MOUSEBUTTONDOWN:
 					try:
 						if event.button==3: #rigth click to unselect
@@ -464,7 +497,7 @@ class CurrentWindow():
 			#print('tour numero :', self.num,'ordre',self.ordre,'joueur tour', self.ordre[self.id_ordre])
 			#print(self.list_phase[self.phase])
 			self.t_hud=[]
-			display_hud(self.nb_units,self.t_hud,self.turns,(10,sprites_pays[0].map_pays.get_height()+10))
+			display_hud(self.nb_units,self.t_hud,self.turns,(10,sprites_pays[0].map_pays.get_height()+10),hide)
 			pygame.display.flip()
 
 def menu(Win):
@@ -478,29 +511,6 @@ def roll_dices(number,x,y):
 		de=pygame.image.load(PATH_IMG+str(d)+".png").convert()
 		L.append([de,Win.fenetre.blit(de,(idx*125,0))])
 	Win.surfaces.extend(L) 
-
-def start_game():
-	Win.surfaces=[]
-	#fond bleue
-	# background = pygame.Surface(fenetre.get_size())
-	# background = background.convert()
-	# background.fill(blue)
-	#fond personnalisé
-	background=pygame.image.load(PATH_BCK+BCK_IMG).convert()
-	coeff=f_w/background.get_width() #adapte l'image selon la largeur
-	w=int(coeff*background.get_width())
-	h=int(coeff*background.get_height())
-	background=pygame.transform.scale(background,(w,h))
-
-	#map
-	map_monde=pygame.image.load(PATH_IMG+MAP_IMG).convert_alpha()
-	coeff=f_w/map_monde.get_width()#adapte l'image selon la largeur
-	w=int(coeff*map_monde.get_width())
-	h=int(coeff*map_monde.get_height())
-	map_monde=pygame.transform.scale(map_monde,(w,h))
-	barre=pygame.image.load(PATH_IMG+BAR_IMG).convert()
-	Win.fonctions=[]
-	Win.surfaces.extend([[background,(0,0)],[barre,(0,h)],[map_monde,(0,0)]])
 
 def menu_but():
 	#useless
@@ -542,8 +552,8 @@ if __name__ == '__main__':
 	Win=CurrentWindow(fenetre,T)
 	Win.game.nb_joueurs=3
 	Win.game.joueurs=['nico','nono','jojo']
-	menu(Win)							#affiche ini
-	Win.fonctions.append(start_game)		#fonctions ini
+	#menu(Win)							#affiche ini ? useless ?
+	Win.fonctions.append(Win.start_game)		#fonctions ini 
 	clock.tick(60)
 	
 

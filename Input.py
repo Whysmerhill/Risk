@@ -12,6 +12,7 @@ fields = []
 PLAYERS_COLORS=['red','green','blue','yellow','purple','cian']
 MAX_NB_PLAYERS=6
 MIN_NB_PLAYERS =3
+CLOCK_TICK=60 #refresh rate
 
 def fetch(entries):
    for entry in entries:
@@ -63,8 +64,8 @@ def launch_game(entries):
    Win.game.nb_joueurs=nb_players
    Win.game.joueurs=players_names
    menu(Win)                     #affiche ini
-   #Win.fonctions.append(start_game)    #fonctions ini
-   clock.tick(60)
+   Win.fonctions.append(Win.start_game)    #fonctions ini
+   clock.tick(CLOCK_TICK)
 
    Win.afficher() #on rentre dans la boucle while d'affichage
 

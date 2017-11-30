@@ -49,20 +49,23 @@ class Player():
 
 	def use_best_cards(self):
 		#TODO empecher l'utilisation si on est pas dans le tour de déploiment
-		nb_s=[x for x in self.cards if x.type==x.types[0]]
-		nb_h=[x for x in self.cards if x.type==x.types[1]]
-		nb_c=[x for x in self.cards if x.type==x.types[2]]
-		if len(nb_s)>0 and len(nb_h)>0 and len(nb_c)>0:#si triplé déparaillé
-			self.use_cards([nb_s[0],nb_h[0],nb_c[0]])
-		elif len(nb_c)>2:#si canon
-			self.use_cards([nb_c[0],nb_c[1],nb_c[2]])
-		elif len(nb_h)>2:#si cavalier
-			self.use_cards([nb_h[0],nb_h[1],nb_h[2]])
-		elif len(nb_s)>2:#si soldats
-			self.use_cards([nb_s[0],nb_s[1],nb_s[2]])
-		else:#sinon pas de combi possible
-			#TODO raise
-			print('Pas de combianaison disponibles')
+		if self.turns.list_phase[self.turns.phase]=='placement':
+			nb_s=[x for x in self.cards if x.type==x.types[0]]
+			nb_h=[x for x in self.cards if x.type==x.types[1]]
+			nb_c=[x for x in self.cards if x.type==x.types[2]]
+			if len(nb_s)>0 and len(nb_h)>0 and len(nb_c)>0:#si triplé déparaillé
+				self.use_cards([nb_s[0],nb_h[0],nb_c[0]])
+			elif len(nb_c)>2:#si canon
+				self.use_cards([nb_c[0],nb_c[1],nb_c[2]])
+			elif len(nb_h)>2:#si cavalier
+				self.use_cards([nb_h[0],nb_h[1],nb_h[2]])
+			elif len(nb_s)>2:#si soldats
+				self.use_cards([nb_s[0],nb_s[1],nb_s[2]])
+			else:#sinon pas de combi possible
+				#TODO raise
+				print('Pas de combianaison disponibles')
+		else:#TODO raise
+			print('On peut positionner que pendant la phase de placement')
 
 	#take only 3 cards in input
 	def use_cards(self,cards):
