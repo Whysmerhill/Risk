@@ -10,6 +10,8 @@ Shortcut:
 <li>p : next player turn</li>
 <li>h : show/hide help menu</li>
 <li>c : show/hide continents</li>
+<li>u : use cards</li>
+<li>d : show/hide quests & cards</li>
 <li>rigth click : unselect</li>
 <li>mouse wheel : increase/decrease number of units select</li>
 </ul>
@@ -26,6 +28,7 @@ Known bug:
 TODO:
 <ul>
 <li>Improve speed</li>
+<li>color are horrible</li>
 <li>hide players secret informations</li>
 <li>show dice results</li>
 <li><del>limit number of bonus card to five</del></li>

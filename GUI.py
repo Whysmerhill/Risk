@@ -10,19 +10,15 @@ import glob
 PATH_IMG='Pictures/'
 PATH_MAP='Pictures/Maps/'
 PATH_BCK='Pictures/Backgrounds/'
+PATH_DCE='Pictures/Dices/'
 MAP_IMG='Risk_game_map_fixed.png'
 BCK_IMG='background5.jpg'
 BAR_IMG='barre.png'
+POLICE_NAME='freesansbold.ttf'
+POLICE_SIZE=16
+DICE_SIZE=25
 f_w=1280
 f_h=800
-
-green=(0,255,0)
-lgreen=(0,200,0)
-red=(255,0,0)
-black=(0,0,0)
-grey=(100,100,100)
-lgrey=(125,125,125)
-blue=(0,0,250)
 
 class ColorMap():
 	def __init__(self):
@@ -54,7 +50,7 @@ def button(msg,x,y,w,h,ic,ac,action=None):
 	else:
 		pygame.draw.rect(fenetre, ic,(x,y,w,h))
 
-	smallText = pygame.font.Font("freesansbold.ttf",16)
+	smallText = pygame.font.Font(POLICE_NAME,POLICE_SIZE)
 	textSurf, textRect = text_objects(msg, smallText)
 	textRect.center = ( (x+(w/2)), (y+(h/2)) )
 	fenetre.blit(textSurf, textRect)
@@ -85,7 +81,7 @@ def add_text(layer,message,pos,font,color=(0,0,0)):
 	layer.append([textSurf, textRect])
 
 def display_troupes(textes,sprites,Map):
-	smallText = pygame.font.Font("freesansbold.ttf",16)
+	smallText = pygame.font.Font(POLICE_NAME,POLICE_SIZE)
 	for sprite in sprites:
 		pays=Map.pays[sprite.id-1]
 		textSurf, textRect = text_objects(str(pays.nb_troupes), smallText)
@@ -93,7 +89,7 @@ def display_troupes(textes,sprites,Map):
 		textes.append([textSurf, textRect])
 
 def display_win(final_layer,players):
-	bigText = pygame.font.Font("freesansbold.ttf",42)
+	bigText = pygame.font.Font(POLICE_SIZE,42)
 	marge=50
 	pos=(200,200)
 	for p in players:
@@ -111,7 +107,7 @@ def display_win(final_layer,players):
 			final_layer.append([textSurf, textRect])
 
 def display_help(final_layer,colormap):
-	bigText = pygame.font.Font("freesansbold.ttf",42)
+	bigText = pygame.font.Font(POLICE_NAME,42)
 	marge=50
 	pos=(200,200)
 	add_text(final_layer,'ESC : exit game',pos,bigText,colormap.white)
@@ -128,9 +124,9 @@ def display_help(final_layer,colormap):
 
 
 def display_hud(nb_units,t_hud,turns,pos,hide):
-	smallText = pygame.font.Font("freesansbold.ttf",16)
+	smallText = pygame.font.Font(POLICE_NAME,POLICE_SIZE)
 	marge=20
-	col=[0,300,600,700]
+	col=[100,400,700,800]
 	row=pos[1]
 	#partie joueur
 	textSurf, textRect = text_objects('Tour : '+str(turns.num), smallText)
@@ -285,7 +281,11 @@ class CurrentWindow():
 		w=int(coeff*map_monde.get_width())
 		h=int(coeff*map_monde.get_height())
 		map_monde=pygame.transform.scale(map_monde,(w,h))
-		barre=pygame.image.load(PATH_IMG+BAR_IMG).convert()
+
+		#HUD barre
+		barre=pygame.image.load(PATH_IMG+BAR_IMG).convert_alpha()
+		barre=pygame.transform.scale(barre,(f_w,f_h-h))
+
 		self.fonctions=[]
 		self.surfaces.extend([[background,(0,0)],[barre,(0,h)],[map_monde,(0,0)]])
 
@@ -345,6 +345,7 @@ class CurrentWindow():
 						self.turns.game_finish=True
 					elif event.key == K_h:
 						help_menu = not help_menu
+						roll_dices(self,[2,6],400,sprites_pays[0].map_pays.get_height()+10)
 					elif event.key == K_c:
 						self.tmp=[]
 						display_continent(self.turns.map.continents[id_c],self.tmp,sprites_pays_masque)
@@ -437,7 +438,7 @@ class CurrentWindow():
 								else:
 									print('pays n\'appartenant pas au joueur')
 						elif self.turns.list_phase[self.turns.phase] == 'attaque':
-							if click[0]==1 and not select:
+							if click[0]==1 and not select: #selection du pays attaquant 
 								pays1=next((p for p in self.map.pays if p.id == sprite.id), None)
 								self.pays_select=pays1
 								if pays1.id_player==self.turns.player_turn and pays1.nb_troupes>1:
@@ -445,9 +446,9 @@ class CurrentWindow():
 									self.tmp.append(sprites_pays_masque[idx].map_pays)
 									select=True 
 									sprite_select=sprite.id
-							elif click[0]==1:
+							elif click[0]==1:#selection du pays attaqué
 								pays2=next((p for p in self.map.pays if p.id == sprite.id), None)
-								if atck_winmove and pays2 == pays_atck and pays1.nb_troupes>1:
+								if atck_winmove and pays2 == pays_atck and pays1.nb_troupes>1:#mouvement gratuit apres attaque reussi
 									self.turns.deplacer(pays1,pays2,self.nb_units)
 									select=False
 									self.tmp=[]
@@ -498,28 +499,31 @@ class CurrentWindow():
 			#print('tour numero :', self.num,'ordre',self.ordre,'joueur tour', self.ordre[self.id_ordre])
 			#print(self.list_phase[self.phase])
 			self.t_hud=[]
-			display_hud(self.nb_units,self.t_hud,self.turns,(10,sprites_pays[0].map_pays.get_height()+10),hide)
+			display_hud(self.nb_units,self.t_hud,self.turns,(75,sprites_pays[0].map_pays.get_height()+10),hide)
 			pygame.display.flip()
 
 def menu(Win):
+	#useless?
 	barre=pygame.image.load(PATH_IMG+BAR_IMG).convert()
 	r1=Win.fenetre.blit(barre,(0,0))
 	Win.surfaces.extend([[barre,r1]])
 
-def roll_dices(number,x,y):
+def roll_dices(Win,number,x,y):
 	L=[]
 	for idx,d in enumerate(number):
-		de=pygame.image.load(PATH_IMG+str(d)+".png").convert()
-		L.append([de,Win.fenetre.blit(de,(idx*125,0))])
+		de=pygame.image.load(PATH_DCE+str(d)+".png").convert_alpha()
+		resize_de=pygame.transform.scale(de,(DICE_SIZE,DICE_SIZE)) #resize des dices
+		L.append([resize_de,Win.fenetre.blit(resize_de,(idx*DICE_SIZE*1.1+x,y))])
 	Win.surfaces.extend(L) 
 
-def menu_but():
+def menu_but(Win):
 	#useless
-	button('Start',150,150,100,50,grey,lgrey,start_game)
-	func=functools.partial(roll_dices,[5,4,4],0,0)		#generation d'une nouvelle fonction avec les agruments
-	button('Roll1',f_w/2,f_h/2,100,50,grey,lgrey,func)
-	func=functools.partial(roll_dices,[1,6],0,0)		
-	button('Roll2',300,300,100,50,grey,lgrey,func)
+	colors=ColorMap()
+	#button('Start',150,150,100,50,colors.grey,colors.black,start_game)
+	func=functools.partial(roll_dices,Win,[5,4,4],0,0)		#generation d'une nouvelle fonction avec les agruments
+	button('Roll1',f_w/2,f_h/2,100,50,colors.grey,colors.black,func)
+	func=functools.partial(roll_dices,Win,[1,6],0,0)		
+	button('Roll2',300,300,100,50,colors.black,colors.black,func)
 
 if __name__ == '__main__':
 	import Risk
@@ -553,7 +557,7 @@ if __name__ == '__main__':
 	Win=CurrentWindow(fenetre,T)
 	Win.game.nb_joueurs=3
 	Win.game.joueurs=['nico','nono','jojo']
-	#menu(Win)							#affiche ini ? useless ?
+	#menu_but(Win)							#affiche ini ? useless ?
 	Win.fonctions.append(Win.start_game)		#fonctions ini 
 	clock.tick(60)
 	
