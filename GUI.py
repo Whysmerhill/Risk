@@ -217,6 +217,7 @@ class CurrentWindow():
 		self.fenetre=fenetre
 		self.fonctions=[]	#liste de l'ensemble des fonctions a exécuter
 		self.surfaces=[] #liste de l'ensemble des surfaces à afficher
+		self.dices=[] #liste de l'ensemble des surfaces dices
 		self.game=GamePara()
 		self.turns=turns
 		self.players=turns.players
@@ -369,6 +370,8 @@ class CurrentWindow():
 						print(e.args)
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
+			for dice in self.dices:
+				self.fenetre.blit(dice[0],dice[1])
 			for sprite in sprites_pays:
 				self.fenetre.blit(sprite.map_pays,(0,0))
 			for tmp in self.tmp:
@@ -515,7 +518,7 @@ def roll_dices(Win,number,x,y):
 		de=pygame.image.load(PATH_DCE+str(d)+".png").convert_alpha()
 		resize_de=pygame.transform.scale(de,(DICE_SIZE,DICE_SIZE)) #resize des dices
 		L.append([resize_de,Win.fenetre.blit(resize_de,(idx*DICE_SIZE*1.1+x,y))])
-	Win.surfaces.extend(L) 
+	Win.dices.extend(L) 
 
 def menu_but(Win):
 	#useless
