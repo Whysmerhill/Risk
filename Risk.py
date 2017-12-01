@@ -396,7 +396,7 @@ class Turns():
 	def throw_dices(self,atck,defense):
 		d_a=[]
 		d_b=[]
-		pertes=[0,0]     						#[pertes de l'attaquant, deffenseur]
+		pertes=[0,0,d_a,d_b]     						#[pertes de l'attaquant, deffenseur]
 		for k in range(0,atck):
 			d_a.append(random.randint(1,6))
 		d_a.sort(reverse=True)
@@ -432,7 +432,7 @@ class Turns():
 			pays_d.nb_troupes-=res[1]
 
 			if nb_attaquants==0: #l'attaque a echoué
-				return False
+				return False,res
 			elif pays_d.nb_troupes==0: #le pays est capturé
 				#mise a jour de la liste des pays de chaque joueurs
 				self.players[pays_a.id_player-1].pays.append(pays_d.id)
@@ -450,7 +450,7 @@ class Turns():
 						#TODO raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
 					self.players[pays_a.id_player-1].cards.append(Card())
 					#print(self.players[pays_a.id_player-1].cards)
-				return True   #success
+				return True,res  #success
 
 	def deplacer(self,pays_ori,pays_dest,nb_troupes):
 		pays_ori.nb_troupes-=nb_troupes

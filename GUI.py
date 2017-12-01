@@ -122,11 +122,10 @@ def display_help(final_layer,colormap):
 	pos=(pos[0],pos[1]+marge)
 	add_text(final_layer,'u : use your cards',pos,bigText,colormap.white)
 
-
 def display_hud(nb_units,t_hud,turns,pos,hide):
 	smallText = pygame.font.Font(POLICE_NAME,POLICE_SIZE)
 	marge=20
-	col=[100,400,700,800]
+	col=[100,400,700,1000]
 	row=pos[1]
 	#partie joueur
 	textSurf, textRect = text_objects('Tour : '+str(turns.num), smallText)
@@ -345,7 +344,6 @@ class CurrentWindow():
 						self.turns.game_finish=True
 					elif event.key == K_h:
 						help_menu = not help_menu
-						roll_dices(self,[2,6],500,sprites_pays[0].map_pays.get_height()+10)
 					elif event.key == K_c:
 						self.tmp=[]
 						display_continent(self.turns.map.continents[id_c],self.tmp,sprites_pays_masque)
@@ -459,7 +457,10 @@ class CurrentWindow():
 									atck_winmove=False
 								elif pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
 									try:
-										atck=self.turns.attaque(pays1,pays2,self.nb_units)
+										atck,res=self.turns.attaque(pays1,pays2,self.nb_units)
+										roll_dices(self,res[2],600,sprites_pays[0].map_pays.get_height()+10)
+										roll_dices(self,res[3],800,sprites_pays[0].map_pays.get_height()+10)	
+										#print(res)
 									except ValueError as e:
 										print(e.args)
 										atck=False
