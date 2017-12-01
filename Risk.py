@@ -411,6 +411,7 @@ class Turns():
 		return pertes
 
 	def attaque(self,pays_a,pays_d,nb_attaquants):
+		res_l=[]
 		while(True):
 			if nb_attaquants>2:
 				dice_atck=3
@@ -427,12 +428,13 @@ class Turns():
 				dice_def=1
 			res=self.throw_dices(dice_atck,dice_def)
 			print(res)
+			res_l.append(res)
 			pays_a.nb_troupes-=res[0]
 			nb_attaquants-=res[0]
 			pays_d.nb_troupes-=res[1]
 
 			if nb_attaquants==0: #l'attaque a echoué
-				return False,res
+				return False,res_l
 			elif pays_d.nb_troupes==0: #le pays est capturé
 				#mise a jour de la liste des pays de chaque joueurs
 				self.players[pays_a.id_player-1].pays.append(pays_d.id)
@@ -450,7 +452,7 @@ class Turns():
 						#TODO raise ValueError('Too much cards',len(self.players[pays_a.id_player-1].cards))
 					self.players[pays_a.id_player-1].cards.append(Card())
 					#print(self.players[pays_a.id_player-1].cards)
-				return True,res  #success
+				return True,res_l  #success
 
 	def deplacer(self,pays_ori,pays_dest,nb_troupes):
 		pays_ori.nb_troupes-=nb_troupes

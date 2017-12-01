@@ -460,9 +460,12 @@ class CurrentWindow():
 									atck_winmove=False
 								elif pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
 									try:
-										atck,res=self.turns.attaque(pays1,pays2,self.nb_units)
-										roll_dices(self,res[2],600,sprites_pays[0].map_pays.get_height()+10)
-										roll_dices(self,res[3],800,sprites_pays[0].map_pays.get_height()+10)	
+										self.dices=[]		 #on efface les ancians sprites des dice								
+										atck,res_l=self.turns.attaque(pays1,pays2,self.nb_units)
+										print(res_l)
+										for idx,res in enumerate(res_l):
+											roll_dices(self,res[2],600,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)
+											roll_dices(self,res[3],800,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)	
 										#print(res)
 									except ValueError as e:
 										print(e.args)
@@ -564,7 +567,5 @@ if __name__ == '__main__':
 	#menu_but(Win)							#affiche ini ? useless ?
 	Win.fonctions.append(Win.start_game)		#fonctions ini 
 	clock.tick(60)
-	
 
 	Win.afficher()	#on rentre dans la boucle while d'affichage
-

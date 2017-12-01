@@ -19,7 +19,7 @@ Shortcut:
 Known bug:
 <ul>
 <li>text too long</li>
-<li>no path 2->6afrique du sud</li>
+<li>no path 2->6afrique du sud; italie/maroc</li>
 <li>pas de combat avec un attaquant</li>
 <li><del>bug map, black color</del></li>
 <li><del>no path mexic->argentine</del></li>
@@ -31,6 +31,7 @@ TODO:
 <ul>
 <li>Improve speed</li>
 <li>color are horrible</li>
+<li>Permettre le combat tours par tours avec interruption du joeurs ou combat instant</li>
 <li>hide players secret informations</li>
 <li>show dice results</li>
 <li><del>limit number of bonus card to five</del></li>
