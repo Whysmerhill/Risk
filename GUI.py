@@ -345,7 +345,7 @@ class CurrentWindow():
 						self.turns.game_finish=True
 					elif event.key == K_h:
 						help_menu = not help_menu
-						roll_dices(self,[2,6],400,sprites_pays[0].map_pays.get_height()+10)
+						roll_dices(self,[2,6],500,sprites_pays[0].map_pays.get_height()+10)
 					elif event.key == K_c:
 						self.tmp=[]
 						display_continent(self.turns.map.continents[id_c],self.tmp,sprites_pays_masque)
