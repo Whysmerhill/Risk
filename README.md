@@ -31,14 +31,14 @@ TODO:
 <ul>
 <li>Improve speed</li>
 <li>color are horrible</li>
-<li>Permettre le combat tours par tours avec interruption du joeurs ou combat instant</li>
-<li>hide players secret informations</li>
+<li>Permettre le combat tours par tours avec interruption du joueurs ou combat instant</li>
 <li>show dice results</li>
-<li><del>limit number of bonus card to five</del></li>
 <li>debug mod</li>
 <li>check neighbor</li>
 <li>encoding for french</li>
 <li>make continent appear when you higlight continent or objectives</li>
+<li><del>hide players secret informations</del></li>
+<li><del>limit number of bonus card to five</del></li>
 <li><del>negative number of soldier</del></li>
 <li><del>allow to move a number of soldier after a win</del></li>
 <li><del>allow to chose number of attacker</del></li>

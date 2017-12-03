@@ -11,9 +11,11 @@ PATH_IMG='Pictures/'
 PATH_MAP='Pictures/Maps/'
 PATH_BCK='Pictures/Backgrounds/'
 PATH_DCE='Pictures/Dices/'
-MAP_IMG='Risk_game_map_fixed.png'
+MAP_IMG='Risk_game_map_fixed_greylevel.png'
+MAP_LVL='Risk_game_map_fixed_greylevel.png'
 BCK_IMG='background5.jpg'
 BAR_IMG='barre.png'
+DHE_IMG='tete-de-mort.png'
 POLICE_NAME='freesansbold.ttf'
 POLICE_SIZE=16
 DICE_SIZE=25
@@ -89,7 +91,7 @@ def display_troupes(textes,sprites,Map):
 		textes.append([textSurf, textRect])
 
 def display_win(final_layer,players):
-	bigText = pygame.font.Font(POLICE_SIZE,42)
+	bigText = pygame.font.Font(POLICE_NAME,42)
 	marge=50
 	pos=(200,200)
 	for p in players:
@@ -131,9 +133,12 @@ def display_hud(nb_units,t_hud,turns,pos,hide):
 	textSurf, textRect = text_objects('Tour : '+str(turns.num), smallText)
 	textRect.topleft = pos
 	t_hud.append([textSurf, textRect])
-	textSurf, textRect = text_objects('Joueur : '+turns.players[turns.player_turn-1].name, smallText,turns.players[turns.player_turn-1].color)
+	textSurf, textRect = text_objects('Joueur : ',smallText)
 	pos=(pos[0],pos[1]+marge)
 	textRect.topleft = pos
+	t_hud.append([textSurf, textRect])
+	textSurf, textRect = text_objects(turns.players[turns.player_turn-1].name, smallText,turns.players[turns.player_turn-1].color)
+	textRect.topleft = (pos[0]+70,pos[1])#pas propre
 	t_hud.append([textSurf, textRect])
 	textSurf, textRect = text_objects('Phase : '+turns.list_phase[turns.phase], smallText)
 	pos=(pos[0],pos[1]+marge)
@@ -223,7 +228,7 @@ class CurrentWindow():
 		self.players=turns.players
 		self.map=turns.map
 		self.textes=[]#liste des textes de troupes pour les fusionner aprés les surfaces
-		self.tmp=[]#liste des spirtes temporaires
+		self.tmp=[]#liste des sprites temporaires
 		self.t_hud=[]#liste des textes HUD
 		self.final_layer=[]#derniere couche d'affichage, utilisé pour le winning screen et le menu d'aide
 		self._nb_units=5 
@@ -288,7 +293,6 @@ class CurrentWindow():
 
 		self.fonctions=[]
 		self.surfaces.extend([[background,(0,0)],[barre,(0,h)],[map_monde,(0,0)]])
-
 
 	def afficher(self,fonction=None):
 		colormap=ColorMap()
@@ -412,96 +416,107 @@ class CurrentWindow():
 			mouse = pygame.mouse.get_pos()
 			#print(self.fenetre.get_at((mouse[0], mouse[1])))
 			#boucle de survole des pays
-			for idx,sprite in enumerate(sprites_pays):
-				if sprite.bounds.x<mouse[0]<sprite.bounds.x+sprite.bounds.width and sprite.bounds.y<mouse[1]<sprite.bounds.y+sprite.bounds.height: 
-					if sprite.map_pays.get_at((mouse[0],mouse[1])) != (0,0,0):
-						#print(sprite.id)
-						#masque quand passage de la souris crée à la volé
-						# if sprite.id != sprite_select:
-						# 	sprite_bis=SpritePays(sprite.map_pays.copy(),"00.png") #pas propre
-						# 	color_surface(sprite_bis,(1,1,1),150)
-						# 	self.fenetre.blit(sprite_bis.map_pays,(0,0))
-						# 	pygame.display.flip()
-						if sprite.id != sprite_select:
-							self.fenetre.blit(sprites_pays_masque[idx].map_pays,(0,0))
-							pygame.display.flip()
-						click=pygame.mouse.get_pressed()
-						if self.turns.list_phase[self.turns.phase] == 'placement':
-							if click[0]==1:
-								pays=next((p for p in self.map.pays if p.id == sprite.id), None) 
-								if pays.id_player==self.turns.player_turn:
-									#mise a jout du nombre de troupes
-									self.turns.placer(pays,self.nb_units)
-									# try:
-									# 	self.nb_units=self.players[self.turns.player_turn-1].nb_troupes
-									# except ValueError as e:
-									# 	print(e.args)
-								else:
-									print('pays n\'appartenant pas au joueur')
-						elif self.turns.list_phase[self.turns.phase] == 'attaque':
-							if click[0]==1 and not select: #selection du pays attaquant 
-								pays1=next((p for p in self.map.pays if p.id == sprite.id), None)
-								self.pays_select=pays1
-								if pays1.id_player==self.turns.player_turn and pays1.nb_troupes>1:
-									self.nb_units=pays1.nb_troupes-1
-									self.tmp.append(sprites_pays_masque[idx].map_pays)
-									select=True 
-									sprite_select=sprite.id
-							elif click[0]==1:#selection du pays attaqué
-								pays2=next((p for p in self.map.pays if p.id == sprite.id), None)
-								if atck_winmove and pays2 == pays_atck and pays1.nb_troupes>1:#mouvement gratuit apres attaque reussi
-									self.turns.deplacer(pays1,pays2,self.nb_units)
-									select=False
-									self.tmp=[]
-									atck_winmove=False
-								elif atck_winmove:
-									select=False
-									self.tmp=[]
-									atck_winmove=False
-								elif pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
-									try:
-										self.dices=[]		 #on efface les ancians sprites des dice								
-										atck,res_l=self.turns.attaque(pays1,pays2,self.nb_units)
-										print(res_l)
-										for idx,res in enumerate(res_l):
-											roll_dices(self,res[2],600,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)
-											roll_dices(self,res[3],800,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)	
-										#print(res)
-									except ValueError as e:
-										print(e.args)
-										atck=False
-										select=False
-										self.tmp=[]
-									if atck:
-										color_surface(sprite,self.turns.players[self.turns.player_turn-1].color,255)
-										atck_winmove=True
-										pays_atck=pays2
-										self.nb_units=pays1.nb_troupes-1
-									else:
-										select=False
-										self.tmp=[]
-						elif self.turns.list_phase[self.turns.phase] == 'deplacement':
-							if click[0]==1 and not select:
-								pays1=next((p for p in self.map.pays if p.id == sprite.id), None)
-								self.pays_select=pays1
-								if pays1.id_player==self.turns.player_turn and pays1.nb_troupes>1:
-									self.nb_units=pays1.nb_troupes-1
-									self.tmp.append(sprites_pays_masque[idx].map_pays)
-									select=True 
-									sprite_select=sprite.id
-							elif click[0]==1:
-								pays2=next((p for p in self.map.pays if p.id == sprite.id), None)
-								chemin=self.map.chemin_exist(self.turns.players[self.turns.player_turn-1].pays,pays1,pays2)
+			#for idx,sprite in enumerate(sprites_pays):
+				#if sprite.bounds.x<mouse[0]<sprite.bounds.x+sprite.bounds.width and sprite.bounds.y<mouse[1]<sprite.bounds.y+sprite.bounds.height: 
+			try:
+				mouse_color=self.surfaces[2][0].get_at((mouse[0],mouse[1]))
+			except IndexError as e:
+				pass #pas propre
+				#print(e.args)
+			if mouse_color != (0,0,0,0) and mouse_color != (0,0,0,255):
+			#if sprite.map_pays.get_at((mouse[0],mouse[1])) != (0,0,0):
+				id_pays_tmp=mouse_color[0]-100
+				#print(id_pays_tmp)
+				sp_msq=next((sp for sp in sprites_pays_masque if sp.id == id_pays_tmp), None)
+				#print(sp_msq.id) 
+				#print(sprite.id)
+				#masque quand passage de la souris crée à la volé
+				# if sprite.id != sprite_select:
+				# 	sprite_bis=SpritePays(sprite.map_pays.copy(),"00.png") #pas propre
+				# 	color_surface(sprite_bis,(1,1,1),150)
+				# 	self.fenetre.blit(sprite_bis.map_pays,(0,0))
+				# 	pygame.display.flip()
+				if id_pays_tmp != sprite_select:
+					self.fenetre.blit(sp_msq.map_pays,(0,0))
+					pygame.display.flip()
+				click=pygame.mouse.get_pressed()
+				if self.turns.list_phase[self.turns.phase] == 'placement':
+					if click[0]==1:
+						pays=next((p for p in self.map.pays if p.id == id_pays_tmp), None) 
+						if pays.id_player==self.turns.player_turn:
+							#mise a jout du nombre de troupes
+							self.turns.placer(pays,self.nb_units)
+							# try:
+							# 	self.nb_units=self.players[self.turns.player_turn-1].nb_troupes
+							# except ValueError as e:
+							# 	print(e.args)
+						else:
+							print('pays n\'appartenant pas au joueur')
+				elif self.turns.list_phase[self.turns.phase] == 'attaque':
+					if click[0]==1 and not select: #selection du pays attaquant 
+						pays1=next((p for p in self.map.pays if p.id == id_pays_tmp), None)
+						self.pays_select=pays1
+						if pays1.id_player==self.turns.player_turn and pays1.nb_troupes>1:
+							self.nb_units=pays1.nb_troupes-1
+							self.tmp.append(sp_msq.map_pays)
+							select=True 
+							sprite_select=id_pays_tmp
+					elif click[0]==1:#selection du pays attaqué
+						pays2=next((p for p in self.map.pays if p.id == id_pays_tmp), None)
+						if atck_winmove and pays2 == pays_atck and pays1.nb_troupes>1:#mouvement gratuit apres attaque reussi
+							self.turns.deplacer(pays1,pays2,self.nb_units)
+							select=False
+							self.tmp=[]
+							atck_winmove=False
+						elif atck_winmove:
+							select=False
+							self.tmp=[]
+							atck_winmove=False
+						elif pays2.id_player!=self.turns.player_turn and pays2.id in pays1.voisins:
+							try:
+								self.dices=[]		 #on efface les ancians sprites des dice								
+								atck,res_l=self.turns.attaque(pays1,pays2,self.nb_units)
+								print(res_l)
+								for idx,res in enumerate(res_l):
+									roll_dices(self,res[0],res[2],600,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)#pas propre
+									roll_dices(self,res[1],res[3],800,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)	
+								#print(res)
+							except ValueError as e:
+								print(e.args)
+								atck=False
 								select=False
-								sprite_select=0
 								self.tmp=[]
-								if chemin and pays2.id != pays1.id:
-									self.turns.deplacer(pays1,pays2,self.nb_units)
-									self.turns.next()
-						#affichage des troupes
-						self.textes=[]
-						display_troupes(self.textes,sprites_pays,self.map)
-						break
+							if atck:
+								sprite=next((s for s in sprites_pays if s.id == id_pays_tmp), None)
+								color_surface(sprite,self.turns.players[self.turns.player_turn-1].color,255)
+								atck_winmove=True
+								pays_atck=pays2
+								self.nb_units=pays1.nb_troupes-1
+							else:
+								select=False
+								self.tmp=[]
+				elif self.turns.list_phase[self.turns.phase] == 'deplacement':
+					if click[0]==1 and not select:
+						pays1=next((p for p in self.map.pays if p.id == id_pays_tmp), None)
+						self.pays_select=pays1
+						if pays1.id_player==self.turns.player_turn and pays1.nb_troupes>1:
+							self.nb_units=pays1.nb_troupes-1
+							self.tmp.append(sp_msq.map_pays)
+							select=True 
+							sprite_select=id_pays_tmp
+					elif click[0]==1:
+						pays2=next((p for p in self.map.pays if p.id == id_pays_tmp), None)
+						chemin=self.map.chemin_exist(self.turns.players[self.turns.player_turn-1].pays,pays1,pays2)
+						select=False
+						sprite_select=0
+						self.tmp=[]
+						if chemin and pays2.id != pays1.id:
+							self.turns.deplacer(pays1,pays2,self.nb_units)
+							self.turns.next()
+				#affichage des troupes
+				self.textes=[]
+				display_troupes(self.textes,sprites_pays,self.map)
+				#break
 			#HUD
 			#print('tour numero :', self.num,'ordre',self.ordre,'joueur tour', self.ordre[self.id_ordre])
 			#print(self.list_phase[self.phase])
@@ -515,12 +530,18 @@ def menu(Win):
 	r1=Win.fenetre.blit(barre,(0,0))
 	Win.surfaces.extend([[barre,r1]])
 
-def roll_dices(Win,number,x,y):
+#affichage des dés(résultats) +têtes de morts pour les pertes
+def roll_dices(Win,pertes,number,x,y):
 	L=[]
 	for idx,d in enumerate(number):
 		de=pygame.image.load(PATH_DCE+str(d)+".png").convert_alpha()
 		resize_de=pygame.transform.scale(de,(DICE_SIZE,DICE_SIZE)) #resize des dices
 		L.append([resize_de,Win.fenetre.blit(resize_de,(idx*DICE_SIZE*1.1+x,y))])
+
+	for idx_p in range(0,pertes):
+		deadhead=pygame.image.load(PATH_DCE+DHE_IMG).convert_alpha()
+		resize_dh=pygame.transform.scale(deadhead,(DICE_SIZE,DICE_SIZE)) #resize des deadhead
+		L.append([resize_dh,Win.fenetre.blit(resize_dh,(x-(idx_p+1)*DICE_SIZE*1.1,y))])
 	Win.dices.extend(L) 
 
 def menu_but(Win):
