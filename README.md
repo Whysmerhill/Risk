@@ -19,8 +19,8 @@ Shortcut:
 Known bug:
 <ul>
 <li>text too long</li>
-<li>no path 2->6afrique du sud; italie/maroc</li>
-<li>pas de combat avec un attaquant</li>
+<li><del>no path 2->6afrique du sud; italie/maroc</del></li>
+<li><del>pas de combat avec un attaquant</del></li>
 <li><del>bug map, black color</del></li>
 <li><del>no path mexic->argentine</del></li>
 <li><del>turn 1 troops bug</del></li>
@@ -29,14 +29,14 @@ Known bug:
 
 TODO:
 <ul>
-<li>Improve speed</li>
+<li><del>Improve speed</del></li>
 <li>color are horrible</li>
 <li>Permettre le combat tours par tours avec interruption du joueurs ou combat instant</li>
-<li>show dice results</li>
 <li>debug mod</li>
 <li>check neighbor</li>
 <li>encoding for french</li>
 <li>make continent appear when you higlight continent or objectives</li>
+<li><del>show dice results</del></li>
 <li><del>hide players secret informations</del></li>
 <li><del>limit number of bonus card to five</del></li>
 <li><del>negative number of soldier</del></li>

@@ -63,6 +63,12 @@ def color_surface(surface,color):
 			if surface.get_at((x,y))!=(0,0,0):
 				surface.set_at((x,y),color)
 
+#not used right now
+def color_surface_map(surface,color,map_color):
+	for x in range(0,surface.get_width()):
+		for y in range(0,surface.get_height()):
+			if surface.get_at((x,y))==map_color:
+				surface.set_at((x,y),color)
 #useless?
 def colorize(image, newColor):
     # zero out RGB values
@@ -231,7 +237,7 @@ class CurrentWindow():
 		self.tmp=[]#liste des sprites temporaires
 		self.t_hud=[]#liste des textes HUD
 		self.final_layer=[]#derniere couche d'affichage, utilisé pour le winning screen et le menu d'aide
-		self._nb_units=5 
+		self._nb_units=25 
 		self.pays_select=None #pays selectionné
 
 	@property
@@ -317,8 +323,14 @@ class CurrentWindow():
 			color_surface(sp_masque,(1,1,1),150)
 			sprites_pays.append(sp)
 			sprites_pays_masque.append(sp_masque)
+
 		#colorisation des pays selon les couleurs des joueurs
 		self.color_players(sprites_pays)
+		for idx, spr in enumerate(sprites_pays):#pas super propre
+			if idx==0:
+				merged_pays = spr.map_pays.copy()
+			else:
+				merged_pays.blit(spr.map_pays, (0, 0))
 		#affichage des troupes
 		display_troupes(self.textes,sprites_pays,self.map)
 
@@ -372,12 +384,14 @@ class CurrentWindow():
 						print('You should select a country first')
 					except ValueError as e:
 						print(e.args)
+
 			for surface in self.surfaces:
 				self.fenetre.blit(surface[0],surface[1])
 			for dice in self.dices:
 				self.fenetre.blit(dice[0],dice[1])
-			for sprite in sprites_pays:
-				self.fenetre.blit(sprite.map_pays,(0,0))
+			#for sprite in sprites_pays:
+			#	self.fenetre.blit(sprite.map_pays,(0,0))
+			self.fenetre.blit(merged_pays,(0,0))
 			for tmp in self.tmp:
 				self.fenetre.blit(tmp,(0,0))
 			for texte in self.textes:
@@ -438,6 +452,7 @@ class CurrentWindow():
 				# 	pygame.display.flip()
 				if id_pays_tmp != sprite_select:
 					self.fenetre.blit(sp_msq.map_pays,(0,0))
+					pygame.display.update(sp_msq.map_pays.get_rect())
 					pygame.display.flip()
 				click=pygame.mouse.get_pressed()
 				if self.turns.list_phase[self.turns.phase] == 'placement':
@@ -489,6 +504,7 @@ class CurrentWindow():
 							if atck:
 								sprite=next((s for s in sprites_pays if s.id == id_pays_tmp), None)
 								color_surface(sprite,self.turns.players[self.turns.player_turn-1].color,255)
+								merged_pays.blit(sprite.map_pays,(0,0))
 								atck_winmove=True
 								pays_atck=pays2
 								self.nb_units=pays1.nb_troupes-1
