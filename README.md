@@ -19,6 +19,7 @@ Shortcut:
 Known bug:
 <ul>
 <li>text too long</li>
+<li>Click too fast</li>
 <li><del>no path 2->6afrique du sud; italie/maroc</del></li>
 <li><del>pas de combat avec un attaquant</del></li>
 <li><del>bug map, black color</del></li>
