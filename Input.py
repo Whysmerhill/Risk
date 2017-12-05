@@ -92,7 +92,7 @@ def makeform(root, fields):
 
       var1 = StringVar()
       Drop = OptionMenu(root,var1,*lst1)
-      Drop.grid(row=idx, column=2)
+      Drop.grid(row=idx, column=2,sticky="ew") # make option menu with uniform width for all the rows 
       entries.append((field, ent,var1))
    return entries
 

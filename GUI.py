@@ -406,7 +406,7 @@ class CurrentWindow():
 					f()				#fonctions d'affichage
 
 			#Ecran de victoire lorsqu'un joueur gagne
-			if self.turns.game_finish==True:
+			if self.turns.players[self.turns.player_turn-1].obj.get_state()==True: #pas propre
 				self.final_layer=[]
 				win_screen = pygame.Surface(self.fenetre.get_size())
 				win_screen = win_screen.convert()
@@ -466,7 +466,7 @@ class CurrentWindow():
 								if pays.id_player==self.turns.player_turn:
 									#mise a jout du nombre de troupes
 									self.turns.placer(pays,self.nb_units)
-									pygame.time.wait(100) #pas propre?
+									pygame.time.wait(100) #pas propre
 									# try:
 									# 	self.nb_units=self.players[self.turns.player_turn-1].nb_troupes
 									# except ValueError as e:
@@ -501,7 +501,8 @@ class CurrentWindow():
 									print(res_l)
 									for idx,res in enumerate(res_l):
 										roll_dices(self,res[0],res[2],600,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)#pas propre
-										roll_dices(self,res[1],res[3],800,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)	
+										roll_dices(self,res[1],res[3],800,sprites_pays[0].map_pays.get_height()+10+idx*DICE_SIZE*1.1)
+									pygame.time.wait(100) #pas propre
 									#print(res)
 								except ValueError as e:
 									print(e.args)
