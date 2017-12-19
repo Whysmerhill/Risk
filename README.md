@@ -19,6 +19,7 @@ Shortcut:
 Known bug:
 <ul>
 <li>text too long</li>
+<li>no path 2->6afrique du sud</li>
 <li><del>Click too fast</del></li>
 <li><del>no path 2->6afrique du sud; italie/maroc</del></li>
 <li><del>pas de combat avec un attaquant</del></li>
@@ -30,13 +31,17 @@ Known bug:
 
 TODO:
 <ul>
-<li><del>Improve speed</del></li>
+<li>Add some graphic for troops selection</li>
+<li>Improve dice display</li>
+<li>Fonctionality : save </li>
+<li>Don't allow multiple players to take the same color</li>
 <li>color are horrible</li>
 <li>Permettre le combat tours par tours avec interruption du joueurs ou combat instant</li>
 <li>debug mod</li>
 <li>check neighbor</li>
 <li>encoding for french</li>
 <li>make continent appear when you higlight continent or objectives</li>
+<li><del>Improve speed</del></li>
 <li><del>show dice results</del></li>
 <li><del>hide players secret informations</del></li>
 <li><del>limit number of bonus card to five</del></li>
