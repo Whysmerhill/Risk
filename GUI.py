@@ -6,6 +6,7 @@ import pygame
 from pygame.locals import *
 import Risk
 import glob
+import pickle 
 
 PATH_IMG='Pictures/'
 PATH_MAP='Pictures/Maps/'
@@ -38,6 +39,7 @@ class ColorMap():
 		self.dark_red=(170,0,0)
 		self.dark_blue=(0,0,170)
 
+#a mettre dans une classe
 def text_objects(text, font,color=(0,0,0)):
 	textSurface = font.render(text, True, color)
 	return textSurface, textSurface.get_rect()
@@ -210,6 +212,18 @@ def display_continent(cont,temp_layer,sprites_pays_masque):
 	for p in cont.pays:
 		temp_layer.append(next((x.map_pays for x in sprites_pays_masque if x.id == p.id), None))
 
+def save_game(obj_lst):
+	# Saving the objects:
+	with open('saved_game', 'wb') as f:
+		pickle.dump(obj_lst, f)
+		print('Game saved')
+
+def restore_game(obj_lst):
+	# Getting back the objects:
+	with open('saved_game','rb') as f:
+		obj_lst=pickle.load(f)
+		print('Game restored')
+
 class GamePara():
 	def __init__(self):
 		self.nb_joueurs=0
@@ -358,7 +372,7 @@ class CurrentWindow():
 						self.tmp=[]
 						select=False
 						sprite_select=0
-					elif event.key == K_w:
+					elif event.key == K_w:#a enlever, debug func
 						self.turns.game_finish=True
 					elif event.key == K_h:
 						help_menu = not help_menu
@@ -370,6 +384,10 @@ class CurrentWindow():
 						self.turns.players[self.turns.player_turn-1].use_best_cards()
 					elif event.key == K_d:#affichage/masquage des objectifs du joueurs
 						hide = not hide
+					elif event.key == K_s:#sauvegarde
+						save_game(self)
+					elif event.key == K_r:#restoration
+						restore_game(self.turns)
 				elif event.type == MOUSEBUTTONDOWN:
 					try:
 						if event.button==3: #rigth click to unselect
